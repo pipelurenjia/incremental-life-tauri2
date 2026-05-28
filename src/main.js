@@ -163,9 +163,12 @@ store.sidebarTabs = [
 store.sidebarStyle = () =>
   `width: ${store.sidebar.width}px`;
 
-// ---- 初始化 ----
+// ---- 初始化（异步，等待 Tauri Store 加载完成后再挂载） ----
 store._now = Date.now();
-store.init();
+
+store.init().then(() => {
+  createApp(store).mount('#app');
+});
 
 setInterval(() => {
   store._now = Date.now();
@@ -176,5 +179,3 @@ setInterval(() => {
     store.currentTask = getCurrentTask(store.tasks);
   }
 }, 10000);
-
-createApp(store).mount('#app');

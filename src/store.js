@@ -1,5 +1,6 @@
 /**
  * Petite-Vue 响应式 Store
+ * 所有持久化操作改造为 async（Tauri Store Plugin）
  */
 
 import { reactive } from 'petite-vue';
@@ -48,31 +49,31 @@ export function createStore() {
     validationErrors: {},
 
     // ---- 初始化 ----
-    init() {
-      this.tasks = loadTasks();
-      this.actionLogs = loadLogs();
+    async init() {
+      this.tasks = await loadTasks();
+      this.actionLogs = await loadLogs();
       this.currentTask = getCurrentTask(this.tasks);
       backup(this.tasks, this.actionLogs);
       this._bindKeyboard();
     },
 
     // ---- 工作模式 ----
-    startWork() {
+    async startWork() {
       this.working = true;
       this.currentTask = getCurrentTask(this.tasks);
       if (this.currentTask) {
         this.currentTask.last_pushed_at = Date.now();
         this.currentTask.paused_at = null;
-        this._persist();
+        await this._persist();
       }
     },
 
-    stopWork() {
+    async stopWork() {
       this.working = false;
       const task = this.currentTask;
       if (task && !task.paused_at) {
         task.paused_at = Date.now();
-        this._persist();
+        await this._persist();
       }
     },
 
@@ -91,21 +92,21 @@ export function createStore() {
     },
 
     // ---- 任务操作 ----
-    doSchedule(nextReview) {
+    async doSchedule(nextReview) {
       const task = this.currentTask;
       if (!task) return;
       const snapshot = { ...task, paused_at: task.paused_at };
       const { delta, timeSpent } = scheduleTask(task, nextReview);
       const log = generateLog(task, 'advance', delta, timeSpent);
       this.actionLogs.unshift(log);
-      this._persist();
+      await this._persist();
       this.pushUndo({ logId: log.id, taskId: task.id, prevState: snapshot });
       this.currentTask = getCurrentTask(this.tasks);
       this._resetCurrentTaskTimer();
-      this._persist();
+      await this._persist();
     },
 
-    doPushLater() {
+    async doPushLater() {
       const task = this.currentTask;
       if (!task) return;
       const nextReview = pushToEndOfToday(task, this.tasks);
@@ -113,53 +114,53 @@ export function createStore() {
       const { delta, timeSpent } = scheduleTask(task, nextReview);
       const log = generateLog(task, 'advance', delta, timeSpent);
       this.actionLogs.unshift(log);
-      this._persist();
+      await this._persist();
       this.pushUndo({ logId: log.id, taskId: task.id, prevState: snapshot });
       this.currentTask = getCurrentTask(this.tasks);
       this._resetCurrentTaskTimer();
-      this._persist();
+      await this._persist();
     },
 
-    doComplete() {
+    async doComplete() {
       const task = this.currentTask;
       if (!task) return;
       const snapshot = { ...task, paused_at: task.paused_at };
       const { delta, timeSpent } = completeTask(task);
       const log = generateLog(task, 'complete', delta, timeSpent);
       this.actionLogs.unshift(log);
-      this._persist();
+      await this._persist();
       this.pushUndo({ logId: log.id, taskId: task.id, prevState: snapshot });
       this.currentTask = getCurrentTask(this.tasks);
       this._resetCurrentTaskTimer();
-      this._persist();
+      await this._persist();
     },
 
-    doPause() {
+    async doPause() {
       const task = this.currentTask;
       if (!task || task.paused_at) return;
       const snapshot = { ...task };
       task.paused_at = Date.now();
-      this._persist();
+      await this._persist();
       this.pushUndo({ logId: null, taskId: task.id, prevState: snapshot });
     },
 
-    doUnpause() {
+    async doUnpause() {
       const task = this.currentTask;
       if (!task || !task.paused_at) return;
       const snapshot = { ...task };
       const now = Date.now();
       task.last_pushed_at += now - task.paused_at;
       task.paused_at = null;
-      this._persist();
+      await this._persist();
       this.pushUndo({ logId: null, taskId: task.id, prevState: snapshot });
     },
 
-    doCreate(data) {
+    async doCreate(data) {
       const task = createTaskData(data);
       this.tasks.push(task);
       const log = generateLog(task, 'create', {}, 0);
       this.actionLogs.unshift(log);
-      this._persist();
+      await this._persist();
       this.uiState = 'idle';
       this.validationErrors = {};
       if (!this.currentTask) {
@@ -167,7 +168,7 @@ export function createStore() {
       }
     },
 
-    doUpdate(taskId, changes) {
+    async doUpdate(taskId, changes) {
       const task = this.tasks.find(t => t.id === taskId);
       if (!task) return;
       const snapshot = { ...task };
@@ -179,7 +180,7 @@ export function createStore() {
       }
       const log = generateLog(task, 'update', delta, 0);
       this.actionLogs.unshift(log);
-      this._persist();
+      await this._persist();
       this.pushUndo({ logId: log.id, taskId: task.id, prevState: snapshot });
       this.uiState = 'idle';
       this.editingTaskId = null;
@@ -187,14 +188,14 @@ export function createStore() {
       this.currentTask = getCurrentTask(this.tasks);
     },
 
-    doArchive(taskId) {
+    async doArchive(taskId) {
       const task = this.tasks.find(t => t.id === taskId);
       if (!task) return;
       const snapshot = { ...task };
       const delta = updateTaskFields(task, { status: 'archived' });
       const log = generateLog(task, 'archive', delta, 0);
       this.actionLogs.unshift(log);
-      this._persist();
+      await this._persist();
       this.pushUndo({ logId: log.id, taskId: task.id, prevState: snapshot });
       this.uiState = 'idle';
       this.editingTaskId = null;
@@ -209,7 +210,7 @@ export function createStore() {
       }
     },
 
-    doUndo() {
+    async doUndo() {
       if (!this.undoStack.length) return;
       const entry = this.undoStack.pop();
       const task = this.tasks.find(t => t.id === entry.taskId);
@@ -220,7 +221,7 @@ export function createStore() {
         const logIdx = this.actionLogs.findIndex(l => l.id === entry.logId);
         if (logIdx !== -1) this.actionLogs.splice(logIdx, 1);
       }
-      this._persist();
+      await this._persist();
       this.currentTask = getCurrentTask(this.tasks);
     },
 
@@ -293,7 +294,7 @@ export function createStore() {
       this._inlineDate = toDateInput(task.next_review);
     },
 
-    saveInlineEdit(taskId) {
+    async saveInlineEdit(taskId) {
       const task = this.tasks.find(t => t.id === taskId);
       if (!task) { this.inlineEditing = null; return; }
       const changes = {};
@@ -306,7 +307,7 @@ export function createStore() {
         if (newDate !== task.next_review) changes.next_review = newDate;
       }
       if (Object.keys(changes).length > 0) {
-        this.doUpdate(taskId, changes);
+        await this.doUpdate(taskId, changes);
       }
       this.inlineEditing = null;
     },
@@ -352,10 +353,10 @@ export function createStore() {
     },
 
     // ---- 内部 ----
-    _persist() {
-      saveTasks(this.tasks);
-      saveLogs(this.actionLogs);
-      backup(this.tasks, this.actionLogs);
+    async _persist() {
+      await saveTasks(this.tasks);
+      await saveLogs(this.actionLogs);
+      await backup(this.tasks, this.actionLogs);
     },
 
     _bindKeyboard() {
@@ -398,7 +399,6 @@ export function createStore() {
           return;
         }
 
-        // 非工作模式只响应以上快捷键
         if (!this.working) return;
 
         const hasTask = !!this.currentTask;

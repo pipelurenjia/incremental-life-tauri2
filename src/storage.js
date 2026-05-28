@@ -1,17 +1,11 @@
 /**
- * localStorage 读写封装
+ * 持久化封装 — 双环境适配
+ *
+ * - Tauri 环境: 使用 @tauri-apps/plugin-store（文件存储到 %APPDATA%）
+ * - 浏览器环境: 使用 in-memory Map（用于 dev 调试）
  */
 
 import { generateId } from './utils.js';
-
-const SCHEMA_VERSION = 2;
-
-const KEYS = {
-  tasks: 'progressive_tasks',
-  logs: 'progressive_action_logs',
-  backup: 'progressive_backup',
-  schemaVersion: 'progressive_schema_version',
-};
 
 const TASK_DEFAULTS = {
   description: '',
@@ -22,73 +16,59 @@ const TASK_DEFAULTS = {
   created_at: Date.now(),
 };
 
-function safeParse(json, key) {
+let _store = null;
+
+async function getStore() {
+  if (_store !== null) return _store;
+
   try {
-    return JSON.parse(json);
+    // Dynamic import — only resolves inside Tauri WebView
+    const { load } = await import('@tauri-apps/plugin-store');
+    _store = await load('data.json', { autoSave: true });
   } catch {
-    console.error(`数据损坏: ${key}`);
-    return null;
+    // 浏览器/非 Tauri 环境：in-memory fallback
+    const mem = new Map();
+    _store = {
+      get: async (key) => mem.get(key),
+      set: async (key, val) => { mem.set(key, val); },
+      save: async () => {},
+    };
   }
+
+  return _store;
 }
 
-export function loadTasks() {
-  const raw = localStorage.getItem(KEYS.tasks);
+export async function loadTasks() {
+  const store = await getStore();
+  const raw = await store.get('tasks');
   if (!raw) return [];
-  const data = safeParse(raw, KEYS.tasks);
-  if (data === null) return [];
-  return migrateTasks(data);
+  return migrateTasks(raw);
 }
 
-export function saveTasks(tasks) {
-  try {
-    localStorage.setItem(KEYS.tasks, JSON.stringify(tasks));
-  } catch (e) {
-    if (e.name === 'QuotaExceededError') {
-      alert('存储空间不足，请导出数据后清理旧日志');
-    }
-    throw e;
-  }
+export async function saveTasks(tasks) {
+  const store = await getStore();
+  await store.set('tasks', tasks);
 }
 
-export function loadLogs() {
-  const raw = localStorage.getItem(KEYS.logs);
-  if (!raw) return [];
-  const data = safeParse(raw, KEYS.logs);
-  return data !== null ? data : [];
+export async function loadLogs() {
+  const store = await getStore();
+  const raw = await store.get('logs');
+  return raw || [];
 }
 
-export function saveLogs(logs) {
-  try {
-    localStorage.setItem(KEYS.logs, JSON.stringify(logs));
-  } catch (e) {
-    if (e.name === 'QuotaExceededError') {
-      alert('存储空间不足，请导出数据后清理旧日志');
-    }
-    throw e;
-  }
+export async function saveLogs(logs) {
+  const store = await getStore();
+  await store.set('logs', logs);
 }
 
-export function backup(tasks, logs) {
-  try {
-    localStorage.setItem(KEYS.backup, JSON.stringify({ tasks, logs, ts: Date.now() }));
-  } catch {
-    // 备份失败静默处理
-  }
-}
-
-export function getSchemaVersion() {
-  return Number(localStorage.getItem(KEYS.schemaVersion) || 0);
-}
-
-export function setSchemaVersion(v) {
-  localStorage.setItem(KEYS.schemaVersion, String(v));
+/**
+ * 备份：Tauri Store 已自动持久化（文件存储），保留 noop
+ */
+export async function backup() {
+  // Tauri Store auto-save handles persistence
 }
 
 function migrateTasks(tasks) {
-  const version = getSchemaVersion();
-  if (version >= SCHEMA_VERSION) return tasks;
-
-  // 为缺少字段的旧数据补充默认值
   for (const t of tasks) {
     for (const [key, def] of Object.entries(TASK_DEFAULTS)) {
       if (!(key in t)) {
@@ -96,9 +76,6 @@ function migrateTasks(tasks) {
       }
     }
   }
-
-  setSchemaVersion(SCHEMA_VERSION);
-  saveTasks(tasks);
   return tasks;
 }
 
