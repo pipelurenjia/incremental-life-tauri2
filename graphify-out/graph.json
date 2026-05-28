@@ -1,0 +1,3222 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "core_data_flow_architecture",
+        "label": "Core Data Flow Architecture",
+        "nodes": [
+          "src_main_entry",
+          "src_store_createstore",
+          "src_actions_getcurrenttask",
+          "src_actions_createtaskdata",
+          "src_actions_scheduletask",
+          "src_actions_completetask",
+          "src_storage_loadtasks",
+          "src_storage_savetasks",
+          "src_storage_generatelog"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "src/store.js"
+      },
+      {
+        "id": "task_lifecycle_management",
+        "label": "Task Lifecycle Management",
+        "nodes": [
+          "src_actions_createtaskdata",
+          "src_actions_updatetaskfields",
+          "src_actions_scheduletask",
+          "src_actions_completetask",
+          "src_actions_pushtoendoftoday",
+          "src_actions_getcurrenttask",
+          "doc_incrementallife_task_schema",
+          "doc_incrementallife_scheduling_model"
+        ],
+        "relation": "implement",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "src/actions.js"
+      },
+      {
+        "id": "safety_and_recovery",
+        "label": "Safety and Recovery Subsystem",
+        "nodes": [
+          "src_store_undostack",
+          "src_utils_escapehtml",
+          "src_components_edit_form_validatetaskform",
+          "src_storage_backup",
+          "src_storage_migratetasks",
+          "doc_incrementallife_undo_mechanism",
+          "doc_incrementallife_local_storage"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "start.sh",
+      "file_type": "code",
+      "source_file": "start.sh",
+      "source_location": "L1",
+      "metadata": {
+        "language": "bash",
+        "kind": "file"
+      },
+      "id": "start_sh",
+      "community": 8,
+      "norm_label": "start.sh"
+    },
+    {
+      "label": "start.sh script",
+      "file_type": "code",
+      "source_file": "start.sh",
+      "source_location": "L1",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_entrypoint"
+      },
+      "id": "home_lurenjia_incrementallife2_start_sh__entry",
+      "community": 8,
+      "norm_label": "start.sh script"
+    },
+    {
+      "label": "vite.config.js",
+      "file_type": "code",
+      "source_file": "vite.config.js",
+      "source_location": "L1",
+      "id": "vite_config_js",
+      "community": 13,
+      "norm_label": "vite.config.js"
+    },
+    {
+      "label": "package.json",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L1",
+      "id": "package_json",
+      "community": 3,
+      "norm_label": "package.json"
+    },
+    {
+      "label": "name",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L2",
+      "id": "incrementallife2_package_name",
+      "community": 3,
+      "norm_label": "name"
+    },
+    {
+      "label": "private",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L3",
+      "id": "incrementallife2_package_private",
+      "community": 3,
+      "norm_label": "private"
+    },
+    {
+      "label": "version",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L4",
+      "id": "incrementallife2_package_version",
+      "community": 3,
+      "norm_label": "version"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L5",
+      "id": "incrementallife2_package_type",
+      "community": 3,
+      "norm_label": "type"
+    },
+    {
+      "label": "scripts",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L6",
+      "id": "incrementallife2_package_scripts",
+      "community": 3,
+      "norm_label": "scripts"
+    },
+    {
+      "label": "dev",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L7",
+      "id": "incrementallife2_package_scripts_dev",
+      "community": 3,
+      "norm_label": "dev"
+    },
+    {
+      "label": "build",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L8",
+      "id": "incrementallife2_package_scripts_build",
+      "community": 3,
+      "norm_label": "build"
+    },
+    {
+      "label": "preview",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L9",
+      "id": "incrementallife2_package_scripts_preview",
+      "community": 3,
+      "norm_label": "preview"
+    },
+    {
+      "label": "test",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L10",
+      "id": "incrementallife2_package_scripts_test",
+      "community": 3,
+      "norm_label": "test"
+    },
+    {
+      "label": "test:watch",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L11",
+      "id": "incrementallife2_package_scripts_test_watch",
+      "community": 3,
+      "norm_label": "test:watch"
+    },
+    {
+      "label": "dependencies",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L13",
+      "id": "incrementallife2_package_dependencies",
+      "community": 3,
+      "norm_label": "dependencies"
+    },
+    {
+      "label": "petite-vue",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L14",
+      "id": "incrementallife2_package_dependencies_petite_vue",
+      "community": 3,
+      "norm_label": "petite-vue"
+    },
+    {
+      "label": "devDependencies",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L16",
+      "id": "incrementallife2_package_devdependencies",
+      "community": 3,
+      "norm_label": "devdependencies"
+    },
+    {
+      "label": "vite",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L17",
+      "id": "incrementallife2_package_devdependencies_vite",
+      "community": 3,
+      "norm_label": "vite"
+    },
+    {
+      "label": "vitest",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L18",
+      "id": "incrementallife2_package_devdependencies_vitest",
+      "community": 3,
+      "norm_label": "vitest"
+    },
+    {
+      "label": "settings.local.json",
+      "file_type": "code",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L1",
+      "id": "claude_settings_local_json",
+      "community": 7,
+      "norm_label": "settings.local.json"
+    },
+    {
+      "label": "permissions",
+      "file_type": "code",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L2",
+      "id": "claude_settings_local_permissions",
+      "community": 7,
+      "norm_label": "permissions"
+    },
+    {
+      "label": "allow",
+      "file_type": "code",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L3",
+      "id": "claude_settings_local_permissions_allow",
+      "community": 7,
+      "norm_label": "allow"
+    },
+    {
+      "label": "settings.json",
+      "file_type": "code",
+      "source_file": ".claude/settings.json",
+      "source_location": "L1",
+      "id": "claude_settings_json",
+      "community": 6,
+      "norm_label": "settings.json"
+    },
+    {
+      "label": "enabledPlugins",
+      "file_type": "code",
+      "source_file": ".claude/settings.json",
+      "source_location": "L2",
+      "id": "claude_settings_enabledplugins",
+      "community": 6,
+      "norm_label": "enabledplugins"
+    },
+    {
+      "label": "frontend-design@claude-plugins-official",
+      "file_type": "code",
+      "source_file": ".claude/settings.json",
+      "source_location": "L3",
+      "id": "claude_settings_enabledplugins_frontend_design_claude_plugins_official",
+      "community": 6,
+      "norm_label": "frontend-design@claude-plugins-official"
+    },
+    {
+      "label": "store.js",
+      "file_type": "code",
+      "source_file": "src/store.js",
+      "source_location": "L1",
+      "id": "src_store_js",
+      "community": 0,
+      "norm_label": "store.js"
+    },
+    {
+      "label": "toDateInput()",
+      "file_type": "code",
+      "source_file": "src/store.js",
+      "source_location": "L17",
+      "id": "src_store_todateinput",
+      "community": 1,
+      "norm_label": "todateinput()"
+    },
+    {
+      "label": "fromDateInput()",
+      "file_type": "code",
+      "source_file": "src/store.js",
+      "source_location": "L23",
+      "id": "src_store_fromdateinput",
+      "community": 0,
+      "norm_label": "fromdateinput()"
+    },
+    {
+      "label": "createStore()",
+      "file_type": "code",
+      "source_file": "src/store.js",
+      "source_location": "L27",
+      "id": "src_store_createstore",
+      "community": 0,
+      "norm_label": "createstore()"
+    },
+    {
+      "label": "storage.js",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L1",
+      "id": "src_storage_js",
+      "community": 4,
+      "norm_label": "storage.js"
+    },
+    {
+      "label": "KEYS",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L9",
+      "id": "src_storage_keys",
+      "community": 4,
+      "norm_label": "keys"
+    },
+    {
+      "label": "TASK_DEFAULTS",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L16",
+      "id": "src_storage_task_defaults",
+      "community": 4,
+      "norm_label": "task_defaults"
+    },
+    {
+      "label": "safeParse()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L25",
+      "id": "src_storage_safeparse",
+      "community": 4,
+      "norm_label": "safeparse()"
+    },
+    {
+      "label": "loadTasks()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L34",
+      "id": "src_storage_loadtasks",
+      "community": 4,
+      "norm_label": "loadtasks()"
+    },
+    {
+      "label": "saveTasks()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L42",
+      "id": "src_storage_savetasks",
+      "community": 4,
+      "norm_label": "savetasks()"
+    },
+    {
+      "label": "loadLogs()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L53",
+      "id": "src_storage_loadlogs",
+      "community": 4,
+      "norm_label": "loadlogs()"
+    },
+    {
+      "label": "saveLogs()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L60",
+      "id": "src_storage_savelogs",
+      "community": 4,
+      "norm_label": "savelogs()"
+    },
+    {
+      "label": "backup()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L71",
+      "id": "src_storage_backup",
+      "community": 4,
+      "norm_label": "backup()"
+    },
+    {
+      "label": "getSchemaVersion()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L79",
+      "id": "src_storage_getschemaversion",
+      "community": 4,
+      "norm_label": "getschemaversion()"
+    },
+    {
+      "label": "setSchemaVersion()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L83",
+      "id": "src_storage_setschemaversion",
+      "community": 4,
+      "norm_label": "setschemaversion()"
+    },
+    {
+      "label": "migrateTasks()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L87",
+      "id": "src_storage_migratetasks",
+      "community": 4,
+      "norm_label": "migratetasks()"
+    },
+    {
+      "label": "generateLog()",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "L105",
+      "id": "src_storage_generatelog",
+      "community": 4,
+      "norm_label": "generatelog()"
+    },
+    {
+      "label": "actions.js",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L1",
+      "id": "src_actions_js",
+      "community": 0,
+      "norm_label": "actions.js"
+    },
+    {
+      "label": "createTaskData()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L7",
+      "id": "src_actions_createtaskdata",
+      "community": 0,
+      "norm_label": "createtaskdata()"
+    },
+    {
+      "label": "updateTaskFields()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L21",
+      "id": "src_actions_updatetaskfields",
+      "community": 0,
+      "norm_label": "updatetaskfields()"
+    },
+    {
+      "label": "scheduleTask()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L36",
+      "id": "src_actions_scheduletask",
+      "community": 0,
+      "norm_label": "scheduletask()"
+    },
+    {
+      "label": "completeTask()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L52",
+      "id": "src_actions_completetask",
+      "community": 0,
+      "norm_label": "completetask()"
+    },
+    {
+      "label": "pushToEndOfToday()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L67",
+      "id": "src_actions_pushtoendoftoday",
+      "community": 0,
+      "norm_label": "pushtoendoftoday()"
+    },
+    {
+      "label": "getTodayEnd()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L82",
+      "id": "src_actions_gettodayend",
+      "community": 0,
+      "norm_label": "gettodayend()"
+    },
+    {
+      "label": "getCurrentTask()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L88",
+      "id": "src_actions_getcurrenttask",
+      "community": 0,
+      "norm_label": "getcurrenttask()"
+    },
+    {
+      "label": "getNextUpcomingTask()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L96",
+      "id": "src_actions_getnextupcomingtask",
+      "community": 0,
+      "norm_label": "getnextupcomingtask()"
+    },
+    {
+      "label": "getActiveTasks()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L104",
+      "id": "src_actions_getactivetasks",
+      "community": 0,
+      "norm_label": "getactivetasks()"
+    },
+    {
+      "label": "getAllTasks()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L110",
+      "id": "src_actions_getalltasks",
+      "community": 0,
+      "norm_label": "getalltasks()"
+    },
+    {
+      "label": "searchTasks()",
+      "file_type": "code",
+      "source_file": "src/actions.js",
+      "source_location": "L119",
+      "id": "src_actions_searchtasks",
+      "community": 0,
+      "norm_label": "searchtasks()"
+    },
+    {
+      "label": "main.js",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L1",
+      "id": "src_main_js",
+      "community": 1,
+      "norm_label": "main.js"
+    },
+    {
+      "label": "store",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L7",
+      "id": "src_main_store",
+      "community": 1,
+      "norm_label": "store"
+    },
+    {
+      "label": "errors",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L29",
+      "id": "src_main_errors",
+      "community": 1,
+      "norm_label": "errors"
+    },
+    {
+      "label": "task",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L35",
+      "id": "src_main_task",
+      "community": 1,
+      "norm_label": "task"
+    },
+    {
+      "label": "changes",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L41",
+      "id": "src_main_changes",
+      "community": 1,
+      "norm_label": "changes"
+    },
+    {
+      "label": "newTitle",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L42",
+      "id": "src_main_newtitle",
+      "community": 1,
+      "norm_label": "newtitle"
+    },
+    {
+      "label": "newDesc",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L43",
+      "id": "src_main_newdesc",
+      "community": 1,
+      "norm_label": "newdesc"
+    },
+    {
+      "label": "newDate",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L47",
+      "id": "src_main_newdate",
+      "community": 1,
+      "norm_label": "newdate"
+    },
+    {
+      "label": "toDateInput()",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L85",
+      "id": "src_main_todateinput",
+      "community": 1,
+      "norm_label": "todateinput()"
+    },
+    {
+      "label": "fromDateInput()",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L91",
+      "id": "src_main_fromdateinput",
+      "community": 1,
+      "norm_label": "fromdateinput()"
+    },
+    {
+      "label": "d",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L113",
+      "id": "src_main_d",
+      "community": 1,
+      "norm_label": "d"
+    },
+    {
+      "label": "now",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L114",
+      "id": "src_main_now",
+      "community": 1,
+      "norm_label": "now"
+    },
+    {
+      "label": "pad()",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L115",
+      "id": "src_main_pad",
+      "community": 1,
+      "norm_label": "pad()"
+    },
+    {
+      "label": "today",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L119",
+      "id": "src_main_today",
+      "community": 1,
+      "norm_label": "today"
+    },
+    {
+      "label": "taskDay",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L120",
+      "id": "src_main_taskday",
+      "community": 1,
+      "norm_label": "taskday"
+    },
+    {
+      "label": "diffDays",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L121",
+      "id": "src_main_diffdays",
+      "community": 1,
+      "norm_label": "diffdays"
+    },
+    {
+      "label": "utils.js",
+      "file_type": "code",
+      "source_file": "src/utils.js",
+      "source_location": "L1",
+      "id": "src_utils_js",
+      "community": 2,
+      "norm_label": "utils.js"
+    },
+    {
+      "label": "generateId()",
+      "file_type": "code",
+      "source_file": "src/utils.js",
+      "source_location": "L5",
+      "id": "src_utils_generateid",
+      "community": 2,
+      "norm_label": "generateid()"
+    },
+    {
+      "label": "ESC_MAP",
+      "file_type": "code",
+      "source_file": "src/utils.js",
+      "source_location": "L9",
+      "id": "src_utils_esc_map",
+      "community": 2,
+      "norm_label": "esc_map"
+    },
+    {
+      "label": "escapeHtml()",
+      "file_type": "code",
+      "source_file": "src/utils.js",
+      "source_location": "L17",
+      "id": "src_utils_escapehtml",
+      "community": 2,
+      "norm_label": "escapehtml()"
+    },
+    {
+      "label": "formatTime()",
+      "file_type": "code",
+      "source_file": "src/utils.js",
+      "source_location": "L21",
+      "id": "src_utils_formattime",
+      "community": 2,
+      "norm_label": "formattime()"
+    },
+    {
+      "label": "formatCountdown()",
+      "file_type": "code",
+      "source_file": "src/utils.js",
+      "source_location": "L31",
+      "id": "src_utils_formatcountdown",
+      "community": 2,
+      "norm_label": "formatcountdown()"
+    },
+    {
+      "label": "formatDateTime()",
+      "file_type": "code",
+      "source_file": "src/utils.js",
+      "source_location": "L44",
+      "id": "src_utils_formatdatetime",
+      "community": 1,
+      "norm_label": "formatdatetime()"
+    },
+    {
+      "label": "getTimeSpent()",
+      "file_type": "code",
+      "source_file": "src/utils.js",
+      "source_location": "L50",
+      "id": "src_utils_gettimespent",
+      "community": 2,
+      "norm_label": "gettimespent()"
+    },
+    {
+      "label": "create-form.js",
+      "file_type": "code",
+      "source_file": "src/components/create-form.js",
+      "source_location": "L1",
+      "id": "src_components_create_form_js",
+      "community": 1,
+      "norm_label": "create-form.js"
+    },
+    {
+      "label": "empty-state.js",
+      "file_type": "code",
+      "source_file": "src/components/empty-state.js",
+      "source_location": "L1",
+      "id": "src_components_empty_state_js",
+      "community": 10,
+      "norm_label": "empty-state.js"
+    },
+    {
+      "label": "getEmptyStateMessage()",
+      "file_type": "code",
+      "source_file": "src/components/empty-state.js",
+      "source_location": "L5",
+      "id": "components_empty_state_getemptystatemessage",
+      "community": 10,
+      "norm_label": "getemptystatemessage()"
+    },
+    {
+      "label": "undo-button.js",
+      "file_type": "code",
+      "source_file": "src/components/undo-button.js",
+      "source_location": "L1",
+      "id": "src_components_undo_button_js",
+      "community": 12,
+      "norm_label": "undo-button.js"
+    },
+    {
+      "label": "canUndo()",
+      "file_type": "code",
+      "source_file": "src/components/undo-button.js",
+      "source_location": "L5",
+      "id": "components_undo_button_canundo",
+      "community": 12,
+      "norm_label": "canundo()"
+    },
+    {
+      "label": "edit-form.js",
+      "file_type": "code",
+      "source_file": "src/components/edit-form.js",
+      "source_location": "L1",
+      "id": "src_components_edit_form_js",
+      "community": 1,
+      "norm_label": "edit-form.js"
+    },
+    {
+      "label": "validateTaskForm()",
+      "file_type": "code",
+      "source_file": "src/components/edit-form.js",
+      "source_location": "L5",
+      "id": "components_edit_form_validatetaskform",
+      "community": 1,
+      "norm_label": "validatetaskform()"
+    },
+    {
+      "label": "task-card.js",
+      "file_type": "code",
+      "source_file": "src/components/task-card.js",
+      "source_location": "L1",
+      "id": "src_components_task_card_js",
+      "community": 2,
+      "norm_label": "task-card.js"
+    },
+    {
+      "label": "taskCardHtml()",
+      "file_type": "code",
+      "source_file": "src/components/task-card.js",
+      "source_location": "L7",
+      "id": "components_task_card_taskcardhtml",
+      "community": 2,
+      "norm_label": "taskcardhtml()"
+    },
+    {
+      "label": "taskDescriptionHtml()",
+      "file_type": "code",
+      "source_file": "src/components/task-card.js",
+      "source_location": "L11",
+      "id": "components_task_card_taskdescriptionhtml",
+      "community": 2,
+      "norm_label": "taskdescriptionhtml()"
+    },
+    {
+      "label": "action-bar.js",
+      "file_type": "code",
+      "source_file": "src/components/action-bar.js",
+      "source_location": "L1",
+      "id": "src_components_action_bar_js",
+      "community": 9,
+      "norm_label": "action-bar.js"
+    },
+    {
+      "label": "quickActions",
+      "file_type": "code",
+      "source_file": "src/components/action-bar.js",
+      "source_location": "L5",
+      "id": "components_action_bar_quickactions",
+      "community": 9,
+      "norm_label": "quickactions"
+    },
+    {
+      "label": "sidebar.js",
+      "file_type": "code",
+      "source_file": "src/components/sidebar.js",
+      "source_location": "L1",
+      "id": "src_components_sidebar_js",
+      "community": 11,
+      "norm_label": "sidebar.js"
+    },
+    {
+      "label": "tabs",
+      "file_type": "code",
+      "source_file": "src/components/sidebar.js",
+      "source_location": "L5",
+      "id": "components_sidebar_tabs",
+      "community": 11,
+      "norm_label": "tabs"
+    },
+    {
+      "label": "actions.test.js",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L1",
+      "id": "tests_actions_test_js",
+      "community": 0,
+      "norm_label": "actions.test.js"
+    },
+    {
+      "label": "makeTask()",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L14",
+      "id": "tests_actions_test_maketask",
+      "community": 0,
+      "norm_label": "maketask()"
+    },
+    {
+      "label": "task",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L29",
+      "id": "tests_actions_test_task",
+      "community": 0,
+      "norm_label": "task"
+    },
+    {
+      "label": "delta",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L46",
+      "id": "tests_actions_test_delta",
+      "community": 0,
+      "norm_label": "delta"
+    },
+    {
+      "label": "{ delta, timeSpent }",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L71",
+      "id": "tests_actions_test_delta_timespent",
+      "community": 0,
+      "norm_label": "{ delta, timespent }"
+    },
+    {
+      "label": "tasks",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L95",
+      "id": "tests_actions_test_tasks",
+      "community": 0,
+      "norm_label": "tasks"
+    },
+    {
+      "label": "t1",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L100",
+      "id": "tests_actions_test_t1",
+      "community": 0,
+      "norm_label": "t1"
+    },
+    {
+      "label": "t2",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L101",
+      "id": "tests_actions_test_t2",
+      "community": 0,
+      "norm_label": "t2"
+    },
+    {
+      "label": "result",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L102",
+      "id": "tests_actions_test_result",
+      "community": 0,
+      "norm_label": "result"
+    },
+    {
+      "label": "utils.test.js",
+      "file_type": "code",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L1",
+      "id": "tests_utils_test_js",
+      "community": 2,
+      "norm_label": "utils.test.js"
+    },
+    {
+      "label": "id",
+      "file_type": "code",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L6",
+      "id": "tests_utils_test_id",
+      "community": 2,
+      "norm_label": "id"
+    },
+    {
+      "label": "ids",
+      "file_type": "code",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L12",
+      "id": "tests_utils_test_ids",
+      "community": 2,
+      "norm_label": "ids"
+    },
+    {
+      "label": "result",
+      "file_type": "code",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L19",
+      "id": "tests_utils_test_result",
+      "community": 2,
+      "norm_label": "result"
+    },
+    {
+      "label": "date",
+      "file_type": "code",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L71",
+      "id": "tests_utils_test_date",
+      "community": 2,
+      "norm_label": "date"
+    },
+    {
+      "label": "App Entry Point (main.js)",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "entire file",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "src_main_entry",
+      "community": 0,
+      "norm_label": "app entry point (main.js)"
+    },
+    {
+      "label": "Undo Stack (MAX_UNDO=50)",
+      "file_type": "code",
+      "source_file": "src/store.js",
+      "source_location": "line 15",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "src_store_undostack",
+      "community": 5,
+      "norm_label": "undo stack (max_undo=50)"
+    },
+    {
+      "label": "TASK_DEFAULTS (Shared Schema)",
+      "file_type": "code",
+      "source_file": "src/storage.js",
+      "source_location": "line 16",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "src_storage_taskdefaults",
+      "community": 5,
+      "norm_label": "task_defaults (shared schema)"
+    },
+    {
+      "label": "validateTaskForm",
+      "file_type": "code",
+      "source_file": "src/components/edit-form.js",
+      "source_location": "line 5",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "src_components_edit_form_validatetaskform",
+      "community": 0,
+      "norm_label": "validatetaskform"
+    },
+    {
+      "label": "taskCardHtml",
+      "file_type": "code",
+      "source_file": "src/components/task-card.js",
+      "source_location": "line 7",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "src_components_task_card_taskcardhtml",
+      "community": 2,
+      "norm_label": "taskcardhtml"
+    },
+    {
+      "label": "quickActions Config (1h/1d/7d)",
+      "file_type": "code",
+      "source_file": "src/components/action-bar.js",
+      "source_location": "line 5",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "src_components_action_bar_quickactions",
+      "community": 14,
+      "norm_label": "quickactions config (1h/1d/7d)"
+    },
+    {
+      "label": "Sidebar Tab Config",
+      "file_type": "code",
+      "source_file": "src/components/sidebar.js",
+      "source_location": "line 5",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "src_components_sidebar_tabs",
+      "community": 15,
+      "norm_label": "sidebar tab config"
+    },
+    {
+      "label": "One Task At A Time Philosophy",
+      "file_type": "rationale",
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a71",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_incrementallife_one_task_philosophy",
+      "community": 0,
+      "norm_label": "one task at a time philosophy"
+    },
+    {
+      "label": "Undo Stack Mechanism (50-entry cap)",
+      "file_type": "rationale",
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a72.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_incrementallife_undo_mechanism",
+      "community": 5,
+      "norm_label": "undo stack mechanism (50-entry cap)"
+    },
+    {
+      "label": "next_review Scheduling (No Priority)",
+      "file_type": "rationale",
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a72.1 + \u00a73.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_incrementallife_scheduling_model",
+      "community": 0,
+      "norm_label": "next_review scheduling (no priority)"
+    },
+    {
+      "label": "Silent Ops Principle (No Modal/Confirm)",
+      "file_type": "rationale",
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a72.2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_incrementallife_silent_operations",
+      "community": 0,
+      "norm_label": "silent ops principle (no modal/confirm)"
+    },
+    {
+      "label": "Task Data Schema (7 fields)",
+      "file_type": "document",
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a73.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_incrementallife_task_schema",
+      "community": 5,
+      "norm_label": "task data schema (7 fields)"
+    },
+    {
+      "label": "Action Log Schema (7 fields)",
+      "file_type": "document",
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a73.2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_incrementallife_log_schema",
+      "community": 4,
+      "norm_label": "action log schema (7 fields)"
+    },
+    {
+      "label": "localStorage Persistence Strategy",
+      "file_type": "rationale",
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a77",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_incrementallife_local_storage",
+      "community": 4,
+      "norm_label": "localstorage persistence strategy"
+    },
+    {
+      "label": "Actions Unit Tests (Vitest)",
+      "file_type": "code",
+      "source_file": "tests/actions.test.js",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "tests_actions_tests",
+      "community": 0,
+      "norm_label": "actions unit tests (vitest)"
+    },
+    {
+      "label": "Utils Unit Tests (Vitest)",
+      "file_type": "code",
+      "source_file": "tests/utils.test.js",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "tests_utils_tests",
+      "community": 2,
+      "norm_label": "utils unit tests (vitest)"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "start.sh",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "start_sh",
+      "target": "home_lurenjia_incrementallife2_start_sh__entry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "incrementallife2_package_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "incrementallife2_package_private",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "incrementallife2_package_version",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "incrementallife2_package_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "incrementallife2_package_scripts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "incrementallife2_package_dependencies",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "package_json",
+      "target": "incrementallife2_package_devdependencies",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "incrementallife2_package_scripts",
+      "target": "incrementallife2_package_scripts_dev",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "incrementallife2_package_scripts",
+      "target": "incrementallife2_package_scripts_build",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "incrementallife2_package_scripts",
+      "target": "incrementallife2_package_scripts_preview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "incrementallife2_package_scripts",
+      "target": "incrementallife2_package_scripts_test",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "incrementallife2_package_scripts",
+      "target": "incrementallife2_package_scripts_test_watch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "incrementallife2_package_dependencies",
+      "target": "incrementallife2_package_dependencies_petite_vue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "incrementallife2_package_devdependencies",
+      "target": "incrementallife2_package_devdependencies_vite",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "incrementallife2_package_devdependencies",
+      "target": "incrementallife2_package_devdependencies_vitest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "claude_settings_local_json",
+      "target": "claude_settings_local_permissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "claude_settings_local_permissions",
+      "target": "claude_settings_local_permissions_allow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "claude_settings_json",
+      "target": "claude_settings_enabledplugins",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "claude_settings_enabledplugins",
+      "target": "claude_settings_enabledplugins_frontend_design_claude_plugins_official",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_storage_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_storage_loadtasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_storage_savetasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_storage_loadlogs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_storage_savelogs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_storage_backup",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_storage_generatelog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_createtaskdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_updatetaskfields",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_scheduletask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_completetask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_getcurrenttask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_getnextupcomingtask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_getactivetasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_getalltasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_searchtasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_pushtoendoftoday",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_actions_gettodayend",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_store_todateinput",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_store_fromdateinput",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store.js",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "src_store_js",
+      "target": "src_store_createstore",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_store_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/store.js",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "src_store_todateinput",
+      "target": "src_main_pad"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_store_createstore",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "line 7",
+      "weight": 1.0,
+      "source": "src_main_entry",
+      "target": "src_store_createstore"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "line 52",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_storage_loadtasks"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "line 332",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_storage_savetasks"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "lines 82, 95, 107, 137, 157, 172",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_storage_generatelog"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "line 55 + line 334",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_storage_backup"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "line 135",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_actions_createtaskdata"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "lines 151, 171",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_actions_updatetaskfields"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "lines 81, 94",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_actions_scheduletask"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "line 106",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_actions_completetask"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "lines 54, 62, 86, 99, 111, 164, 178, 201",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_actions_getcurrenttask"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "line 92",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_actions_pushtoendoftoday"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js",
+      "source_location": "lines 85, 98, 110, 120, 131, 160, 175, 182-202",
+      "weight": 1.0,
+      "source": "src_store_createstore",
+      "target": "src_store_undostack"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a71",
+      "weight": 1.0,
+      "source": "doc_incrementallife_one_task_philosophy",
+      "target": "src_store_createstore"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a72.2",
+      "weight": 1.0,
+      "source": "doc_incrementallife_silent_operations",
+      "target": "src_store_createstore"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_utils_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_utils_generateid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_keys",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_task_defaults",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_safeparse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_loadtasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_savetasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_loadlogs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_savelogs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_backup",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_getschemaversion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L83",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_setschemaversion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_migratetasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "src_storage_js",
+      "target": "src_storage_generatelog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "src_storage_loadtasks",
+      "target": "src_storage_safeparse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "src_storage_loadlogs",
+      "target": "src_storage_safeparse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "src_storage_loadtasks",
+      "target": "src_storage_migratetasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a77",
+      "weight": 1.0,
+      "source": "doc_incrementallife_local_storage",
+      "target": "src_storage_loadtasks"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "src_storage_migratetasks",
+      "target": "src_storage_savetasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a77",
+      "weight": 1.0,
+      "source": "doc_incrementallife_local_storage",
+      "target": "src_storage_backup"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "src_storage_migratetasks",
+      "target": "src_storage_getschemaversion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/storage.js",
+      "source_location": "L100",
+      "weight": 1.0,
+      "source": "src_storage_migratetasks",
+      "target": "src_storage_setschemaversion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/storage.js",
+      "source_location": "line 107",
+      "weight": 1.0,
+      "source": "src_storage_generatelog",
+      "target": "src_utils_generateid"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a73.2",
+      "weight": 1.0,
+      "source": "doc_incrementallife_log_schema",
+      "target": "src_storage_generatelog"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_utils_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_utils_generateid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_createtaskdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_updatetaskfields",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_scheduletask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_completetask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_pushtoendoftoday",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L82",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_gettodayend",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_getcurrenttask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_getnextupcomingtask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_getactivetasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L110",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_getalltasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "src_actions_js",
+      "target": "src_actions_searchtasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_actions_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_createtaskdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/actions.js",
+      "source_location": "line 9 (via import)",
+      "weight": 1.0,
+      "source": "src_actions_createtaskdata",
+      "target": "src_utils_generateid"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a73.1",
+      "weight": 1.0,
+      "source": "doc_incrementallife_task_schema",
+      "target": "src_actions_createtaskdata"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/actions.test.js",
+      "source_location": "import line 3",
+      "weight": 1.0,
+      "source": "tests_actions_tests",
+      "target": "src_actions_createtaskdata"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "line 48",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_actions_scheduletask",
+      "target": "src_actions_updatetaskfields"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/actions.js",
+      "source_location": "line 63",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_actions_completetask",
+      "target": "src_actions_updatetaskfields"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_updatetaskfields",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_scheduletask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a72.1 + \u00a73.1",
+      "weight": 1.0,
+      "source": "doc_incrementallife_scheduling_model",
+      "target": "src_actions_scheduletask"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/actions.test.js",
+      "source_location": "import line 5",
+      "weight": 1.0,
+      "source": "tests_actions_tests",
+      "target": "src_actions_scheduletask"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_completetask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_actions_gettodayend",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_actions_getcurrenttask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_getcurrenttask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "line 5 + line 156",
+      "weight": 1.0,
+      "source": "src_main_entry",
+      "target": "src_actions_getcurrenttask"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a72.1 + \u00a73.1",
+      "weight": 1.0,
+      "source": "doc_incrementallife_scheduling_model",
+      "target": "src_actions_getcurrenttask"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/actions.test.js",
+      "source_location": "import line 8",
+      "weight": 1.0,
+      "source": "tests_actions_tests",
+      "target": "src_actions_getcurrenttask"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_getnextupcomingtask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_getactivetasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_getalltasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "src_actions_searchtasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_utils_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_utils_formattime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_utils_formatcountdown",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_utils_formatdatetime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_components_edit_form_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "components_edit_form_validatetaskform",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_store",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_errors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_task",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_changes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_newtitle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_newdesc",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_newdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L85",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_todateinput",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L91",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_fromdateinput",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L113",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_d",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_now",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_pad",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_today",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_taskday",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L121",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_diffdays",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "src_main_todateinput",
+      "target": "src_main_pad",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/utils.js",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "src_utils_formatdatetime",
+      "target": "src_main_pad"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_utils_js",
+      "target": "src_utils_generateid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_utils_js",
+      "target": "src_utils_esc_map",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils.js",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "src_utils_js",
+      "target": "src_utils_escapehtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils.js",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "src_utils_js",
+      "target": "src_utils_formattime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils.js",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_utils_js",
+      "target": "src_utils_formatcountdown",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils.js",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "src_utils_js",
+      "target": "src_utils_formatdatetime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils.js",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "src_utils_js",
+      "target": "src_utils_gettimespent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/task-card.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_task_card_js",
+      "target": "src_utils_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "src_utils_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "src_utils_generateid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/utils.test.js",
+      "source_location": "import line 2",
+      "weight": 1.0,
+      "source": "tests_utils_tests",
+      "target": "src_utils_generateid"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/task-card.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_task_card_js",
+      "target": "src_utils_escapehtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "src_utils_escapehtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/task-card.js",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "components_task_card_taskcardhtml",
+      "target": "src_utils_escapehtml"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/task-card.js",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "components_task_card_taskdescriptionhtml",
+      "target": "src_utils_escapehtml"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/task-card.js",
+      "source_location": "line 8",
+      "weight": 1.0,
+      "source": "src_components_task_card_taskcardhtml",
+      "target": "src_utils_escapehtml"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/utils.test.js",
+      "source_location": "import line 2",
+      "weight": 1.0,
+      "source": "tests_utils_tests",
+      "target": "src_utils_escapehtml"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "src_utils_formattime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "src_utils_formatcountdown",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "src_utils_formatdatetime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "re_exports",
+      "context": "export",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/create-form.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_create_form_js",
+      "target": "src_components_edit_form_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "re_exports",
+      "context": "re-export",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/create-form.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_create_form_js",
+      "target": "components_edit_form_validatetaskform",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/empty-state.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_empty_state_js",
+      "target": "components_empty_state_getemptystatemessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/undo-button.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_undo_button_js",
+      "target": "components_undo_button_canundo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/edit-form.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_edit_form_js",
+      "target": "components_edit_form_validatetaskform",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/task-card.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_components_task_card_js",
+      "target": "components_task_card_taskcardhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/task-card.js",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_components_task_card_js",
+      "target": "components_task_card_taskdescriptionhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/action-bar.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_action_bar_js",
+      "target": "components_action_bar_quickactions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/sidebar.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_sidebar_js",
+      "target": "components_sidebar_tabs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "tests_actions_test_maketask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L82",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "tests_actions_test_task",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L83",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "tests_actions_test_delta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "tests_actions_test_delta_timespent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L139",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "tests_actions_test_tasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "tests_actions_test_t1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "tests_actions_test_t2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/actions.test.js",
+      "source_location": "L144",
+      "weight": 1.0,
+      "source": "tests_actions_test_js",
+      "target": "tests_actions_test_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "tests_utils_test_id",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "tests_utils_test_ids",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "tests_utils_test_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/utils.test.js",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "tests_utils_test_js",
+      "target": "tests_utils_test_date",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "line 4",
+      "weight": 1.0,
+      "source": "src_main_entry",
+      "target": "src_components_edit_form_validatetaskform"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a72.3",
+      "weight": 1.0,
+      "source": "doc_incrementallife_undo_mechanism",
+      "target": "src_store_undostack"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md",
+      "source_location": "\u00a73.1",
+      "weight": 1.0,
+      "source": "doc_incrementallife_task_schema",
+      "target": "src_storage_taskdefaults"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "core_data_flow_architecture",
+      "label": "Core Data Flow Architecture",
+      "nodes": [
+        "src_main_entry",
+        "src_store_createstore",
+        "src_actions_getcurrenttask",
+        "src_actions_createtaskdata",
+        "src_actions_scheduletask",
+        "src_actions_completetask",
+        "src_storage_loadtasks",
+        "src_storage_savetasks",
+        "src_storage_generatelog"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/store.js"
+    },
+    {
+      "id": "task_lifecycle_management",
+      "label": "Task Lifecycle Management",
+      "nodes": [
+        "src_actions_createtaskdata",
+        "src_actions_updatetaskfields",
+        "src_actions_scheduletask",
+        "src_actions_completetask",
+        "src_actions_pushtoendoftoday",
+        "src_actions_getcurrenttask",
+        "doc_incrementallife_task_schema",
+        "doc_incrementallife_scheduling_model"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/actions.js"
+    },
+    {
+      "id": "safety_and_recovery",
+      "label": "Safety and Recovery Subsystem",
+      "nodes": [
+        "src_store_undostack",
+        "src_utils_escapehtml",
+        "src_components_edit_form_validatetaskform",
+        "src_storage_backup",
+        "src_storage_migratetasks",
+        "doc_incrementallife_undo_mechanism",
+        "doc_incrementallife_local_storage"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "IncrementalLife\u5f00\u53d1\u6587\u6863.md"
+    }
+  ],
+  "built_at_commit": "4d271a1381a6da04f4b3c5010ecbf1979aa65bd4"
+}

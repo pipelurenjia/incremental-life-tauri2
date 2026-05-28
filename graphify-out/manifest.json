@@ -1,0 +1,112 @@
+{
+  "/home/lurenjia/IncrementalLife2/start.sh": {
+    "mtime": 1779774177.5538576,
+    "ast_hash": "fd68d6e956869945cf68c7415a36da8c",
+    "semantic_hash": "fd68d6e956869945cf68c7415a36da8c"
+  },
+  "/home/lurenjia/IncrementalLife2/vite.config.js": {
+    "mtime": 1779739349.6364017,
+    "ast_hash": "b58de03653cb371ec0f1f841b0605994",
+    "semantic_hash": "b58de03653cb371ec0f1f841b0605994"
+  },
+  "/home/lurenjia/IncrementalLife2/package.json": {
+    "mtime": 1779739348.5237262,
+    "ast_hash": "d5b237b33ae2bbe579d76ae45509d798",
+    "semantic_hash": "d5b237b33ae2bbe579d76ae45509d798"
+  },
+  "/home/lurenjia/IncrementalLife2/.claude/settings.local.json": {
+    "mtime": 1779774182.9757903,
+    "ast_hash": "c8e524c0b06970037ad07d2a3066e2de",
+    "semantic_hash": "c8e524c0b06970037ad07d2a3066e2de"
+  },
+  "/home/lurenjia/IncrementalLife2/.claude/settings.json": {
+    "mtime": 1779742323.797061,
+    "ast_hash": "101c05b77f825dad5f4c5b775c140d8a",
+    "semantic_hash": "101c05b77f825dad5f4c5b775c140d8a"
+  },
+  "/home/lurenjia/IncrementalLife2/src/store.js": {
+    "mtime": 1779744235.604552,
+    "ast_hash": "79e29c32b0430a5a88c442ddbbcb083f",
+    "semantic_hash": "79e29c32b0430a5a88c442ddbbcb083f"
+  },
+  "/home/lurenjia/IncrementalLife2/src/storage.js": {
+    "mtime": 1779740897.6748123,
+    "ast_hash": "8fc76df754fa7c7ef8707ee473b324b7",
+    "semantic_hash": "8fc76df754fa7c7ef8707ee473b324b7"
+  },
+  "/home/lurenjia/IncrementalLife2/src/actions.js": {
+    "mtime": 1779744240.9154866,
+    "ast_hash": "b6046464eb19b98e72ffa0fa85451817",
+    "semantic_hash": "b6046464eb19b98e72ffa0fa85451817"
+  },
+  "/home/lurenjia/IncrementalLife2/src/main.js": {
+    "mtime": 1779744226.900449,
+    "ast_hash": "6f483e7857fece9eb144f4c1e56f60be",
+    "semantic_hash": "6f483e7857fece9eb144f4c1e56f60be"
+  },
+  "/home/lurenjia/IncrementalLife2/src/utils.js": {
+    "mtime": 1779739644.8249938,
+    "ast_hash": "939aa4112e285b190a1dfbb40c42d82a",
+    "semantic_hash": "939aa4112e285b190a1dfbb40c42d82a"
+  },
+  "/home/lurenjia/IncrementalLife2/src/components/create-form.js": {
+    "mtime": 1779739444.4635742,
+    "ast_hash": "fad7d2cc2b15bb3401006a6059f5e223",
+    "semantic_hash": "fad7d2cc2b15bb3401006a6059f5e223"
+  },
+  "/home/lurenjia/IncrementalLife2/src/components/empty-state.js": {
+    "mtime": 1779739437.3685277,
+    "ast_hash": "3e226f8bb5b2b0eeaeaa1addebe492bd",
+    "semantic_hash": "3e226f8bb5b2b0eeaeaa1addebe492bd"
+  },
+  "/home/lurenjia/IncrementalLife2/src/components/undo-button.js": {
+    "mtime": 1779739438.3747804,
+    "ast_hash": "90fddd14d6c8b51eca8ea8445084f825",
+    "semantic_hash": "90fddd14d6c8b51eca8ea8445084f825"
+  },
+  "/home/lurenjia/IncrementalLife2/src/components/edit-form.js": {
+    "mtime": 1779744279.7020736,
+    "ast_hash": "6b8e22a28c00a669ae4a7d43fda39285",
+    "semantic_hash": "6b8e22a28c00a669ae4a7d43fda39285"
+  },
+  "/home/lurenjia/IncrementalLife2/src/components/task-card.js": {
+    "mtime": 1779739433.6287322,
+    "ast_hash": "889c24e22f49e006c9bd9f977d79dce1",
+    "semantic_hash": "889c24e22f49e006c9bd9f977d79dce1"
+  },
+  "/home/lurenjia/IncrementalLife2/src/components/action-bar.js": {
+    "mtime": 1779744255.6179583,
+    "ast_hash": "cc79a19b37835832e616004ceae49508",
+    "semantic_hash": "cc79a19b37835832e616004ceae49508"
+  },
+  "/home/lurenjia/IncrementalLife2/src/components/sidebar.js": {
+    "mtime": 1779739440.159533,
+    "ast_hash": "03eb8ff99033daad7acb8bc66d61ac1f",
+    "semantic_hash": "03eb8ff99033daad7acb8bc66d61ac1f"
+  },
+  "/home/lurenjia/IncrementalLife2/tests/actions.test.js": {
+    "mtime": 1779739622.456779,
+    "ast_hash": "3f8654f167830c66d24c65f02fb82a50",
+    "semantic_hash": "3f8654f167830c66d24c65f02fb82a50"
+  },
+  "/home/lurenjia/IncrementalLife2/tests/utils.test.js": {
+    "mtime": 1779739666.5743403,
+    "ast_hash": "33f653081ee0c2ea41fd9afe27d64d69",
+    "semantic_hash": "33f653081ee0c2ea41fd9afe27d64d69"
+  },
+  "/home/lurenjia/IncrementalLife2/index.html": {
+    "mtime": 1779744215.006686,
+    "ast_hash": "39a04e799277445344920e3998f203a2",
+    "semantic_hash": "39a04e799277445344920e3998f203a2"
+  },
+  "/home/lurenjia/IncrementalLife2/IncrementalLife\u5f00\u53d1\u6587\u6863.md": {
+    "mtime": 1779741668.9873137,
+    "ast_hash": "37cea64cf0589e4cf034f0310f423eb3",
+    "semantic_hash": "37cea64cf0589e4cf034f0310f423eb3"
+  },
+  "/home/lurenjia/IncrementalLife2/.claude/ralph-loop.local.md": {
+    "mtime": 1779739295.2709315,
+    "ast_hash": "42ecc144a56e73da8de1b91a7dc8d4ab",
+    "semantic_hash": "42ecc144a56e73da8de1b91a7dc8d4ab"
+  }
+}

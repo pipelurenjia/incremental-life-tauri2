@@ -13,30 +13,36 @@
 
 ### 2.1 任务调度
 
-- 系统展示一个到期任务（`status==='active'` 且 `next_review <= now`）
+- 调度以天为精度，`next_review` 按日期排序
+- 进入页面后为**首页**，显示「开始工作」按钮和今日待推进任务数
+- 点击「开始工作」进入工作模式，逐一推送到期任务（`status==='active'` 且 `next_review <= now`）
 - 多个到期任务时，取 `next_review` 最早的一个
-- 无到期任务时展示空状态及下一个任务倒计时
+- 处理完一个任务后，下一个到期任务自动出现，循环推进
+- 点击「暂停工作」退出工作模式，回到首页
+- 今日任务全部处理完后显示「今日任务全部完成」
+- 无到期任务时，「开始工作」按钮禁用
 
-### 2.2 核心操作栏（平铺按钮）
+### 2.2 核心操作栏（平铺按钮，仅工作模式显示）
 
 按钮顺序和样式：
 
 text
 
 ```
-[  1h  ]  [  1d  ]  [ 1w+  ]  [ 自定义 ]    [ ✓ 完成 ]
+[ 稍后 ]  [ 明天 ]  [ 1w+ ]  [ 自定义 ]    [ ✓ 完成 ]
 ```
 
 
 
-- `1h`：`next_review = now + 1小时`
-- `1d`：`next_review = now + 1天`
+- `稍后`：将任务排到今天任务队列的末尾（`next_review = 今天其余任务中最晚的时间 + 1s`）
+- `明天`：`next_review = 今天结束 + 1s`（即明天 00:00）
 - `1w+`：`next_review = now + 7天`
-- `自定义`：点击后按钮位置变为输入框（数字 + 单位下拉：分钟/小时/天），回车或点击外部确认，恢复为按钮，时间按输入更新
+- `自定义`：点击后按钮位置变为输入框（数字 + 单位下拉：天/小时/分钟），回车或点击外部确认，恢复为按钮，时间按输入更新
 - `✓ 完成`：`status` 变更为 `completed`，任务从活跃队列消失
 
 **行为**：
 
+- 仅在工作模式下显示操作栏
 - 点击任意按钮后，当前任务立即离开，下一个到期任务（若有）无缝出现
 - 不弹窗，不要求备注，不二次确认
 - 操作完全静默，仅后台生成日志
@@ -44,6 +50,7 @@ text
 ### 2.3 撤销机制
 
 - 每次操作自动保存快照（逆操作信息），压入撤销栈（最多50条）
+- 可撤销的操作：推进、完成、创建、更新、归档、暂停、继续
 - 界面右下角浮现 `↩ 撤销` 按钮（仅当有可撤销操作时显示），点击或按 `Ctrl+Z` 执行撤销
 - 撤销后，之前的任务卡片重新出现，字段和日志恢复到操作前状态
 - 支持连续撤销
@@ -53,9 +60,10 @@ text
 **编辑**：
 
 - 点击任务卡片上的 `✎ 编辑` 或快捷键 `E`
-- 卡片原地切换为编辑表单，可修改所有字段
-- 底部有「删除」按钮（需确认）
-- 保存后恢复卡片显示，若无此任务（如删除）则刷新为下一任务
+- 弹出编辑表单浮层，可修改：标题、备注、**到期日期**（date 输入框，精确到天）
+- 修改到期日期可把未来任务提前到今天，或把今天任务推迟
+- 底部有「归档」按钮（需确认）
+- 保存后恢复卡片显示，若无此任务则刷新为下一任务
 
 **新建**：
 
@@ -65,7 +73,9 @@ text
 
 ### 2.5 侧边栏
 
-- 从右侧滑出，宽度约 360px，有遮罩
+- 从**左侧**滑出，默认宽度 420px，可拖拽右侧边缘调整（280px~700px）
+- 有遮罩，点击遮罩或按 Esc 关闭
+- 侧边栏头部有标题和关闭按钮（✕）
 - 四个标签页，图标+文字：
   - **活跃**：所有 `active` 状态任务列表，按 `next_review` 排序
   - **全部**：所有状态任务，带搜索框筛选
@@ -78,6 +88,10 @@ text
 ### 2.6 计时器
 
 - 任务卡片显示实时计时 `00:04:23`，从 `last_pushed_at` 开始累加
+- 计时器旁边有**暂停/继续**按钮（⏸/▶），或按空格键切换
+- 暂停时计时器变为橙色斜体，停止累加
+- 继续时从暂停时刻恢复累加（暂停期间不计入耗时）
+- `paused_at` 字段记录暂停时刻，`null` 表示未暂停
 - 刷新页面根据 `last_pushed_at` 恢复，计时不中断
 - 视觉风格：正常字号，灰色，不显眼，不制造焦虑
 - 操作后不显示本次耗时，仅在日志中存储
@@ -92,14 +106,15 @@ text
 
 | 快捷键            | 功能                         | 条件                       |
 | :---------------- | :--------------------------- | :------------------------- |
-| `1`               | 推进1小时                    | 任务卡片可见               |
-| `2`               | 推进1天                      | 同上                       |
+| `1`               | 稍后（排到今天队尾）         | 工作模式 + 任务卡片可见    |
+| `2`               | 推到明天                     | 同上                       |
 | `3`               | 推迟1周                      | 同上                       |
 | `4`               | 聚焦自定义时间输入           | 同上                       |
-| `Enter` / `Space` | 完成任务                     | 任务卡片可见且未聚焦输入框 |
+| `Space`           | 暂停/继续计时                | 工作模式 + 任务卡片可见    |
+| `Enter`           | 完成任务                     | 工作模式 + 任务卡片可见    |
 | `Ctrl+Z`          | 撤销                         | 始终可用                   |
 | `N`               | 新建任务                     | 始终可用                   |
-| `E`               | 编辑当前任务                 | 任务卡片可见               |
+| `E`               | 编辑当前任务                 | 工作模式 + 任务卡片可见    |
 | `Ctrl+K`          | 打开搜索（侧边栏搜索标签）   | 始终可用                   |
 | `Esc`             | 关闭侧边栏/编辑表单/新建表单 | 浮层或侧边栏打开时         |
 
@@ -120,8 +135,9 @@ text
                          // active: 活跃任务池
                          // completed: 用户点击"完成"
                          // archived: 用户手动归档（软删除，不真删）
-  next_review: number,   // Unix 时间戳(ms)，下次出现时间，调度时按此字段升序取最早
-  last_pushed_at: number,// Unix 时间戳(ms)，上次被推进/完成操作的时间
+  next_review: number,   // Unix 时间戳(ms)，下次出现时间，调度时按此字段升序取最早，精确到天
+  last_pushed_at: number,// Unix 时间戳(ms)，上次被推进/完成/继续操作的时间
+  paused_at: number|null,// 暂停时刻的时间戳，null 表示未暂停。暂停期间计时不累加
   created_at: number,    // Unix 时间戳(ms)，创建时间
 }
 ```
@@ -164,14 +180,17 @@ const store = reactive({
   tasks: [],
   actionLogs: [],
   currentTask: null,
-  uiState: 'idle', // 'idle' | 'editing' | 'creating' | 'custom-time'
+  working: false,      // 是否处于工作模式
+  uiState: 'idle',     // 'idle' | 'editing' | 'creating' | 'custom-time'
   undoStack: [],
   sidebar: {
     open: false,
-    tab: 'active' // 'active' | 'all' | 'history' | 'search'
+    tab: 'active',     // 'active' | 'all' | 'history' | 'search'
+    width: 420,         // 侧边栏宽度(px)，可拖拽调整 280~700
   },
   searchQuery: '',
-  customTimeValue: null,
+  customTime: { value: 1, unit: 'days' },
+  validationErrors: {},
 });
 ```
 
@@ -185,20 +204,27 @@ javascript
 // 初始化
 init()
 
+// 工作模式
+startWork()          // 进入工作模式，刷新 currentTask
+stopWork()           // 退出工作模式
+countDueToday()      // 统计今日到期任务数
+
 // 任务查询
 getCurrentTask()
 getNextUpcomingTask()
 
 // 任务操作
-scheduleTask(taskId, nextReviewDate) // 统一推进/推迟
-completeTask(taskId)
+scheduleTask(taskId, nextReviewDate) // 统一推进/推迟（自动解除暂停）
+completeTask(taskId)                 // 完成任务（自动解除暂停）
+doPushLater()                        // 稍后：排到今天任务队尾
 createTask(data)
 updateTask(taskId, changes)
-deleteTask(taskId)
+archiveTask(taskId)
 
-// 日志与计时
-getTotalTimeSpent(taskId)
-generateLog(action, taskId, changes, timeSpent)
+// 暂停/继续
+doPause()            // 暂停计时，记录 paused_at
+doUnpause()          // 继续计时，调整 last_pushed_at
+togglePause()        // 切换暂停状态
 
 // 撤销
 pushUndo(snapshot)
@@ -209,6 +235,7 @@ getActiveTasks()
 getAllTasks(filter)
 getLogs(taskId?)
 searchTasks(query)
+startResize(e)       // 侧边栏拖拽调整宽度
 
 // 持久化
 saveToStorage()
@@ -216,22 +243,62 @@ saveToStorage()
 
 
 
-### 4.3 核心操作流程（以推进1h为例）
+### 4.3 核心操作流程
+
+**工作模式流程**：
 
 text
 
 ```
-用户点击 [1h] 或按 1
-  → store.scheduleTask(currentTask.id, new Date(Date.now() + 3600000))
+首页 → 用户点击 [开始工作]
+  → store.startWork()
+  → working = true，刷新 currentTask
+  → UI 显示第一个到期任务卡片 + 操作栏
+
+用户点击 [稍后] 或按 1
+  → store.doPushLater()
   → 内部：
-    1. 记录当前任务快照（用于撤销）
-    2. 计算 time_spent = now - task.last_pushed_at
-    3. 生成日志 action:'advance', time_spent, changes: { next_review, last_pushed_at }
-    4. 更新 task: next_review = 新时间，last_pushed_at = now
-    5. 压入撤销栈
+    1. 计算今日所有到期任务中最晚的 next_review
+    2. 将当前任务 next_review 设为该值 + 1s
+    3. 若暂停中则自动解除暂停
+    4. 记录快照（用于撤销）
+    5. 生成日志 action:'advance'
     6. 写入 localStorage
     7. 重新计算 currentTask = getCurrentTask()
-  → UI 自动响应 currentTask 变化，切换卡片
+  → UI 自动响应，下一个任务卡片出现
+
+用户点击 [✓ 完成] 或按 Enter
+  → store.doComplete()
+  → 内部：
+    1. 若暂停中则自动解除暂停
+    2. 计算 time_spent = now - task.last_pushed_at
+    3. 生成日志 action:'complete'
+    4. 更新 task: status = 'completed'
+    5. 压入撤销栈，写入 localStorage
+    6. 重新计算 currentTask
+  → UI 显示下一个到期任务或「今日任务全部完成」
+
+用户点击 [暂停工作]
+  → store.stopWork()
+  → working = false
+  → UI 回到首页，显示「开始工作」按钮
+```
+
+**暂停计时流程**：
+
+```
+用户点击 ⏸ 或按 Space（工作中 + 有任务）
+  → store.doPause()
+  → 记录快照
+  → task.paused_at = Date.now()
+  → 计时器停止累加，变为橙色斜体，显示暂停时刻的已用时间
+
+用户点击 ▶ 或按 Space（暂停中）
+  → store.doUnpause()
+  → 记录快照
+  → task.last_pushed_at += Date.now() - task.paused_at
+  → task.paused_at = null
+  → 计时器恢复累加
 ```
 
 
@@ -259,24 +326,39 @@ text
 text
 
 ```
-<div id="app" v-scope>
+<div id="app">
+  <!-- 顶部导航栏（始终可见） -->
+  <TopBar />
+
   <!-- 主视图 -->
   <main v-if="!sidebar.open">
-    <div v-if="store.currentTask">
-      <TaskCard :task="store.currentTask" />
-      <ActionBar />
-    </div>
-    <EmptyState v-else />
-    <UndoButton v-if="store.undoStack.length" />
-    <AddButton @click="openCreateForm" />
+    <!-- 首页（未工作） -->
+    <HomeView v-if="!working">
+      <StartWorkButton />
+      <TaskSummary />
+      <CreateButton />
+    </HomeView>
+
+    <!-- 工作模式 -->
+    <template v-if="working">
+      <WorkStatusBar />
+      <div v-if="currentTask">
+        <TaskCard :task="currentTask" />
+        <ActionBar />
+      </div>
+      <WorkComplete v-else />
+    </template>
+
+    <UndoButton v-if="undoStack.length" />
+    <FAB @click="openCreateForm" />
   </main>
 
-  <!-- 侧边栏 -->
-  <Sidebar v-if="store.sidebar.open" />
+  <!-- 左侧侧边栏（可拖拽调整宽度） -->
+  <Sidebar v-if="sidebar.open" />
   
-  <!-- 编辑/新建表单（浮层） -->
-  <EditForm v-if="store.uiState === 'editing'" />
-  <CreateForm v-if="store.uiState === 'creating'" />
+  <!-- 编辑/新建表单（浮层，编辑表单含到期日期字段） -->
+  <EditForm v-if="uiState === 'editing'" />
+  <CreateForm v-if="uiState === 'creating'" />
 </div>
 ```
 
@@ -317,7 +399,8 @@ text
 - 不自动清空数据
 
 **Schema 迁移**：
-- `storage.js` 维护 `SCHEMA_VERSION` 常量
+- `storage.js` 维护 `SCHEMA_VERSION` 常量（当前版本：2）
+- v1→v2 迁移：为旧任务补充 `paused_at: null` 字段
 - 初始化时比对版本，旧数据缺少新字段时自动补充默认值
 - 规则：只加不减字段，永远向后兼容
 

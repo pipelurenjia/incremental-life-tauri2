@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>渐进执行</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@12..72,400;12..72,500;12..72,600&family=Instrument+Sans:wdth,wght@87.5,400;87.5,500;87.5,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles/custom.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部导航栏（始终可见） -->
+    <nav class="topbar">
+      <button type="button" class="topbar-menu-btn" @click="toggleSidebar()">☰ 菜单</button>
+      <span class="topbar-title">渐进执行</span>
+    </nav>
+
+    <!-- 主视图 -->
+    <main v-if="!sidebar.open" role="main" aria-live="polite">
+      <div class="container">
+
+        <!-- ===== 首页：未工作 ===== -->
+        <div v-if="!working" class="home-view">
+          <div class="home-card">
+            <p v-if="tasks.length === 0" class="home-summary">
+              还没有任务，点击下方按钮或按 <kbd>N</kbd> 创建
+            </p>
+            <p v-else class="home-summary">
+              今日共 <strong>{{ countDueToday() }}</strong> 个任务待推进
+            </p>
+            <button type="button" class="btn-start-work" @click="startWork()"
+              :disabled="!currentTask">开始工作</button>
+            <p v-if="!currentTask && tasks.length > 0" class="home-hint">
+              当前没有到期任务，可在侧边栏编辑任务日期
+            </p>
+          </div>
+          <div class="home-actions">
+            <button type="button" class="btn-outline" @click="openCreateForm()">+ 新建任务</button>
+          </div>
+        </div>
+
+        <!-- ===== 工作中 ===== -->
+        <div v-if="working">
+          <div class="work-status-bar">
+            <span class="work-badge">工作中</span>
+            <button type="button" class="btn-stop-work" @click="stopWork()">暂停工作</button>
+          </div>
+
+          <div v-if="currentTask">
+            <div class="task-card">
+              <!-- Title: click to edit inline -->
+              <div class="task-card-header">
+                <input v-if="inlineEditing === currentTask.id"
+                  class="task-title-input"
+                  :value="_inlineTitle"
+                  @input="onInlineTitle($event)"
+                  @keydown.enter.prevent="saveInlineEdit(currentTask.id)"
+                  @keydown.escape.prevent="cancelInlineEdit()"
+                  maxlength="200" />
+                <h2 v-else class="task-title task-title-editable"
+                  @click="startInlineEdit(currentTask)"
+                  title="点击编辑标题">{{ currentTask.title }}</h2>
+              </div>
+
+              <!-- Description: always visible, click to edit -->
+              <textarea v-if="inlineEditing === currentTask.id"
+                class="task-desc-input"
+                :value="_inlineDesc"
+                @input="onInlineDesc($event)"
+                @keydown.escape.prevent="cancelInlineEdit()"
+                placeholder="添加备注..."
+                rows="2"></textarea>
+              <p v-else class="task-desc task-desc-editable"
+                @click="startInlineEdit(currentTask)"
+                title="点击编辑备注">{{ currentTask.description || '添加备注...' }}</p>
+
+              <div class="task-timer-row">
+                <span class="task-timer" :class="{ paused: currentTask.paused_at }">{{ formatTimer(currentTask) }}</span>
+                <button type="button" class="btn-pause" @click="togglePause()"
+                  :title="currentTask.paused_at ? '继续计时 (Space)' : '暂停计时 (Space)'"
+                >{{ currentTask.paused_at ? '▶' : '⏸' }}</button>
+                <!-- Date chip: click to change due date inline -->
+                <span v-if="inlineEditing === currentTask.id" class="task-date-chip task-date-chip--edit">
+                  <input type="date" class="task-date-input"
+                    :value="_inlineDate"
+                    @input="onInlineDate($event)" />
+                </span>
+                <span v-else class="task-date-chip" @click="startInlineEdit(currentTask)"
+                  title="点击编辑日期">📅 {{ formatDueDate(currentTask.next_review) }}</span>
+              </div>
+
+              <!-- Inline edit action buttons -->
+              <div v-if="inlineEditing === currentTask.id" class="inline-edit-actions">
+                <button type="button" class="btn-inline-save" @click="saveInlineEdit(currentTask.id)">保存</button>
+                <button type="button" class="btn-inline-cancel" @click="cancelInlineEdit()">取消</button>
+                <button type="button" class="btn-inline-archive" @click="confirmArchive(currentTask.id)">归档</button>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <div class="action-buttons">
+                <button type="button" class="btn-action" @click="doPushLater()" title="快捷键: 1">稍后</button>
+                <button type="button" class="btn-action" @click="doSchedule(getTodayEnd() + 1000)" title="快捷键: 2">明天</button>
+                <button type="button" class="btn-action" @click="doSchedule(Date.now() + 604800000)" title="快捷键: 3">7天</button>
+                <button type="button" class="btn-complete" @click="doComplete()" title="快捷键: Enter">✓ 完成</button>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="empty-state">
+            <p class="empty-title">今日任务全部完成</p>
+            <p v-if="getNextUpcoming()">
+              下一个：「{{ getNextUpcoming().title }}」— {{ formatNextReview(getNextUpcoming().next_review) }}
+            </p>
+            <button type="button" class="btn-stop-work" @click="stopWork()">暂停工作</button>
+          </div>
+        </div>
+
+        <!-- 撤销 -->
+        <div v-if="undoStack.length" class="undo-float">
+          <button type="button" class="btn-undo" @click="doUndo()" aria-label="撤销" title="撤销 (Ctrl+Z)">↩ 撤销</button>
+        </div>
+
+        <!-- FAB 新建按钮 -->
+        <button type="button" class="fab" @click="openCreateForm()" aria-label="新建任务" title="新建任务 (N)">+</button>
+      </div>
+    </main>
+
+    <!-- ===== 左侧边栏 ===== -->
+    <div v-if="sidebar.open" class="sidebar-overlay" @click="closeSidebar()">
+      <aside class="sidebar" :style="sidebarStyle()" @click.stop>
+        <div class="sidebar-header">
+          <span>
+            <button v-if="sidebar.editTaskId" type="button" class="sidebar-back" @click="sidebar.editTaskId = null">← 返回</button>
+            <span v-else>菜单</span>
+          </span>
+          <button type="button" class="sidebar-close" @click="closeSidebar()">✕</button>
+        </div>
+
+        <!-- 任务编辑面板（侧边栏内嵌） -->
+        <div v-if="sidebar.editTaskId && getTaskById(sidebar.editTaskId)" class="sidebar-edit-panel">
+          <label>标题
+            <input type="text" :value="getTaskById(sidebar.editTaskId).title"
+              @input="onEditTitle($event)" maxlength="200" />
+            <span v-if="validationErrors.title" class="field-error">{{ validationErrors.title }}</span>
+          </label>
+          <label>备注
+            <textarea :value="getTaskById(sidebar.editTaskId).description || ''"
+              @input="onEditDesc($event)" rows="3"></textarea>
+          </label>
+          <label>到期日期
+            <input type="date" :value="formatDueDate(getTaskById(sidebar.editTaskId).next_review)"
+              @input="onEditDate($event)" />
+          </label>
+          <label>总耗时
+            <span class="field-readonly">{{ formatTotalTime(getTaskById(sidebar.editTaskId).total_time_spent) }}</span>
+          </label>
+          <label>预估耗时 (分钟)
+            <input type="number" :value="_editEstimatedTime"
+              @input="onEditEstimatedTime($event)" placeholder="选填" min="0" />
+          </label>
+          <div class="sidebar-edit-actions">
+            <button type="button" class="btn-save" @click="saveEdit()">保存</button>
+            <button type="button" class="btn-cancel" @click="sidebar.editTaskId = null; validationErrors = {}">取消</button>
+            <button type="button" class="btn-delete" @click="confirmArchive(sidebar.editTaskId)">归档</button>
+          </div>
+        </div>
+
+        <!-- 标签切换（编辑面板显示时隐藏） -->
+        <nav v-if="!sidebar.editTaskId" class="sidebar-tabs">
+          <button type="button" v-for="tab in sidebarTabs" :key="tab.id" class="sidebar-tab"
+            :class="{ active: sidebar.tab === tab.id }" @click="switchTab(tab.id)">{{ tab.label }}</button>
+        </nav>
+
+        <div v-if="!sidebar.editTaskId && sidebar.tab === 'active'" class="sidebar-content">
+          <ul class="task-list">
+            <li v-for="task in getActiveTasks()" :key="task.id" class="task-list-item" @click="openSidebarEdit(task.id)">
+              <span class="task-list-title">{{ task.title }}</span>
+              <span class="task-list-time">{{ formatNextReview(task.next_review) }}</span>
+            </li>
+          </ul>
+          <p v-if="getActiveTasks().length === 0" class="sidebar-empty">暂无活跃任务</p>
+        </div>
+
+        <div v-if="!sidebar.editTaskId && sidebar.tab === 'all'" class="sidebar-content">
+          <input type="search" class="sidebar-search" placeholder="筛选任务..." v-model="searchQuery" />
+          <ul class="task-list">
+            <li v-for="task in getAllTasks(searchQuery)" :key="task.id" class="task-list-item" @click="openSidebarEdit(task.id)">
+              <span class="task-list-title">{{ task.title }}</span>
+              <span class="task-list-status">{{ statusLabel(task.status) }}</span>
+            </li>
+          </ul>
+          <p v-if="getAllTasks(searchQuery).length === 0" class="sidebar-empty">暂无匹配任务</p>
+        </div>
+
+        <div v-if="!sidebar.editTaskId && sidebar.tab === 'history'" class="sidebar-content">
+          <ul class="log-list">
+            <li v-for="log in actionLogs" :key="log.id" class="log-item">
+              <span class="log-action">{{ getActionLabel(log.action) }}</span>
+              <span class="log-title">{{ log.task_title }}</span>
+              <span class="log-time">{{ formatDateTime(log.timestamp) }}</span>
+            </li>
+          </ul>
+          <p v-if="actionLogs.length === 0" class="sidebar-empty">暂无操作记录</p>
+        </div>
+
+        <div v-if="!sidebar.editTaskId && sidebar.tab === 'search'" class="sidebar-content">
+          <input type="search" class="sidebar-search" placeholder="搜索任务标题..." v-model="searchQuery" />
+          <ul v-if="searchQuery.trim()" class="task-list">
+            <li v-for="task in doSearch(searchQuery)" :key="task.id" class="task-list-item" @click="openSidebarEdit(task.id)">
+              <span class="task-list-title">{{ task.title }}</span>
+              <span class="task-list-status">{{ statusLabel(task.status) }}</span>
+            </li>
+          </ul>
+          <p v-if="searchQuery.trim() && doSearch(searchQuery).length === 0" class="sidebar-empty">无匹配结果</p>
+        </div>
+
+        <div class="sidebar-resize-handle" @mousedown="startResize($event)"></div>
+      </aside>
+    </div>
+
+    <!-- ===== 新建表单浮层 ===== -->
+    <div v-if="uiState === 'creating'" class="modal-overlay" @click="closeForms()">
+      <div class="modal" @click.stop>
+        <h3>新建任务</h3>
+        <label>标题
+          <input type="text" v-model="_createFormData.title" maxlength="200" required />
+          <span v-if="validationErrors.title" class="field-error">{{ validationErrors.title }}</span>
+        </label>
+        <label>备注
+          <textarea v-model="_createFormData.description" rows="3"></textarea>
+        </label>
+        <label>到期时间
+          <input type="date" v-model="_createFormData.dueDate" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn-save" @click="submitCreate()">创建</button>
+          <button type="button" class="btn-cancel" @click="closeForms()">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
