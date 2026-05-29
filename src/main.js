@@ -3,6 +3,9 @@ import { createStore } from './store.js';
 import { formatTime, formatCountdown, formatDateTime } from './utils.js';
 import { validateTaskForm } from './components/edit-form.js';
 import { getCurrentTask, getTodayEnd } from './actions.js';
+import {
+  exportTasksToJSON, exportTasksToCSV, downloadFile, openFile, parseImportedTasks,
+} from './storage.js';
 
 const store = createStore();
 
@@ -27,17 +30,26 @@ store.onEditDesc = (e) => { store._editDesc = e.target.value; };
 store.onEditDate = (e) => { store._editDate = e.target.value; };
 store.onEditEstimatedTime = (e) => { store._editEstimatedTime = e.target.value; };
 
-store.saveEdit = () => {
+// ---- 卡片内联编辑 ----
+store.onInlineTitle = (e) => { store._inlineTitle = e.target.value; };
+store.onInlineDesc = (e) => { store._inlineDesc = e.target.value; };
+store.onInlineDate = (e) => { store._inlineDate = e.target.value; };
+
+store.confirmArchive = (taskId) => {
+  if (confirm('确定归档此任务吗？')) {
+    store.doArchive(taskId);
+  }
+};
+
+// ---- 卡片浏览器 ----
+store.saveBrowserEdit = () => {
+  const taskId = store.browser.selectedTaskId;
+  if (!taskId) return;
+  const task = store.tasks.find(t => t.id === taskId);
+  if (!task) { store.closeBrowserDetail(); return; }
   const errors = validateTaskForm(store._editTitle);
   if (Object.keys(errors).length) {
     store.validationErrors = errors;
-    return;
-  }
-  const taskId = store.editingTaskId;
-  const task = store.tasks.find(t => t.id === taskId);
-  if (!task) {
-    store.sidebar.editTaskId = null;
-    store.validationErrors = {};
     return;
   }
   const changes = {};
@@ -59,24 +71,77 @@ store.saveEdit = () => {
     changes.estimated_time = null;
   }
   if (Object.keys(changes).length === 0) {
-    store.sidebar.editTaskId = null;
+    store.closeBrowserDetail();
     store.validationErrors = {};
     return;
   }
   store.doUpdate(taskId, changes);
-  store.sidebar.editTaskId = null;
+  store.closeBrowserDetail();
   store.validationErrors = {};
 };
 
-// ---- 卡片内联编辑 ----
-store.onInlineTitle = (e) => { store._inlineTitle = e.target.value; };
-store.onInlineDesc = (e) => { store._inlineDesc = e.target.value; };
-store.onInlineDate = (e) => { store._inlineDate = e.target.value; };
+store.cancelBrowserEdit = () => {
+  store.closeBrowserDetail();
+  store.validationErrors = {};
+};
 
-store.confirmArchive = (taskId) => {
+store.browserArchive = (taskId) => {
   if (confirm('确定归档此任务吗？')) {
     store.doArchive(taskId);
+    store.closeBrowserDetail();
   }
+};
+
+store.browserSortIcon = (column) => {
+  if (store.browser.sortBy !== column) return ' ⇅';
+  return store.browser.sortDir === 'asc' ? ' ↑' : ' ↓';
+};
+
+store.formatBrowserStatus = (status) =>
+  ({ active: '活跃', completed: '已完成', archived: '已归档' }[status] || status);
+
+store.browserStatusChange = (e) => {
+  const taskId = store.browser.selectedTaskId;
+  if (!taskId) return;
+  const task = store.tasks.find(t => t.id === taskId);
+  if (!task) return;
+  const newStatus = e.target.value;
+  if (newStatus !== task.status) {
+    store.doUpdate(taskId, { status: newStatus });
+  }
+};
+
+store.importTaskFile = async () => {
+  try {
+    const result = await openFile();
+    if (!result) return;
+    const imported = parseImportedTasks(result.content, result.ext);
+    if (imported.length === 0) {
+      alert('文件中没有可导入的任务');
+      return;
+    }
+    for (const t of imported) {
+      store.tasks.push(t);
+    }
+    await store._persist();
+    alert(`成功导入 ${imported.length} 个任务`);
+  } catch (e) {
+    alert('导入失败: ' + e.message);
+  }
+};
+
+store.exportJSON = async () => {
+  const tasks = store.getBrowserTasks();
+  if (tasks.length === 0) { alert('没有可导出的任务'); return; }
+  const content = exportTasksToJSON(tasks);
+  await downloadFile(content, 'progressive-tasks.json', 'application/json');
+};
+
+store.exportCSV = async () => {
+  const tasks = store.getBrowserTasks();
+  if (tasks.length === 0) { alert('没有可导出的任务'); return; }
+  const content = exportTasksToCSV(tasks);
+  await downloadFile(content, 'progressive-tasks.csv', 'text/csv; charset=utf-8');
 };
 
 store.submitCreate = () => {
@@ -150,18 +215,6 @@ store.formatNextReview = (ts) => {
 
 store.formatDueDate = (ts) => toDateInput(ts);
 store.getTodayEnd = getTodayEnd;
-
-// ---- 侧边栏 ----
-store.sidebarTabs = [
-  { id: 'active', label: '活跃' },
-  { id: 'all', label: '全部' },
-  { id: 'history', label: '历史' },
-  { id: 'search', label: '搜索' },
-];
-
-// 侧边栏宽度样式（响应式）
-store.sidebarStyle = () =>
-  `width: ${store.sidebar.width}px`;
 
 // ---- 初始化（异步，等待 Tauri Store 加载完成后再挂载） ----
 store._now = Date.now();

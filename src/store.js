@@ -9,8 +9,7 @@ import {
 } from './storage.js';
 import {
   createTaskData, updateTaskFields, scheduleTask, completeTask,
-  getCurrentTask, getNextUpcomingTask, getActiveTasks, getAllTasks,
-  searchTasks, pushToEndOfToday, getTodayEnd,
+  getCurrentTask, getNextUpcomingTask, pushToEndOfToday, getTodayEnd,
 } from './actions.js';
 
 const MAX_UNDO = 50;
@@ -39,14 +38,15 @@ export function createStore() {
     _inlineTitle: '',
     _inlineDesc: '',
     _inlineDate: '',
-    sidebar: {
-      open: false,
-      tab: 'active',
-      width: 420,
-      editTaskId: null,
-    },
-    searchQuery: '',
     validationErrors: {},
+    browser: {
+      open: false,
+      sortBy: 'next_review',
+      sortDir: 'asc',
+      searchQuery: '',
+      selectedTaskId: null,
+      detailOpen: false,
+    },
 
     // ---- 初始化 ----
     async init() {
@@ -225,55 +225,7 @@ export function createStore() {
       this.currentTask = getCurrentTask(this.tasks);
     },
 
-    // ---- 侧边栏 ----
-    toggleSidebar() {
-      this.sidebar.open = !this.sidebar.open;
-      if (this.sidebar.open) {
-        this.sidebar.tab = 'active';
-        this.searchQuery = '';
-      }
-    },
-
-    closeSidebar() {
-      this.sidebar.open = false;
-    },
-
-    switchTab(tab) {
-      this.sidebar.tab = tab;
-      this.searchQuery = '';
-    },
-
-    // 侧边栏宽度拖拽
-    startResize(e) {
-      e.preventDefault();
-      const startX = e.clientX;
-      const startWidth = this.sidebar.width;
-      const onMove = (ev) => {
-        const delta = ev.clientX - startX;
-        const w = Math.max(280, Math.min(700, startWidth + delta));
-        this.sidebar.width = w;
-      };
-      const onUp = () => {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-      };
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-    },
-
-    // ---- 编辑/新建表单 ----
-    openSidebarEdit(taskId) {
-      const task = this.tasks.find(t => t.id === taskId);
-      if (!task) return;
-      this.editingTaskId = taskId;
-      this._editTitle = task.title;
-      this._editDesc = task.description || '';
-      this._editDate = toDateInput(task.next_review);
-      this._editEstimatedTime = task.estimated_time != null ? String(task.estimated_time) : '';
-      this.sidebar.editTaskId = taskId;
-      this.validationErrors = {};
-    },
-
+    // ---- 新建表单 ----
     openCreateForm() {
       this.uiState = 'creating';
       this._createFormData = { title: '', description: '', dueDate: toDateInput(Date.now()) };
@@ -284,6 +236,87 @@ export function createStore() {
       this.uiState = 'idle';
       this.editingTaskId = null;
       this.validationErrors = {};
+    },
+
+    // ---- 卡片浏览器 ----
+    toggleBrowser() {
+      this.browser.open = !this.browser.open;
+      if (this.browser.open) {
+        this.browser.detailOpen = false;
+        this.browser.selectedTaskId = null;
+        this.browser.searchQuery = '';
+      }
+    },
+
+    closeBrowser() {
+      this.browser.open = false;
+      this.browser.detailOpen = false;
+      this.browser.selectedTaskId = null;
+    },
+
+    browserSetSort(column) {
+      if (this.browser.sortBy === column) {
+        this.browser.sortDir = this.browser.sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.browser.sortBy = column;
+        this.browser.sortDir = 'asc';
+      }
+    },
+
+    getBrowserTasks() {
+      let result = [...this.tasks];
+      const q = this.browser.searchQuery.trim().toLowerCase();
+      if (q) {
+        result = result.filter(t => t.title.toLowerCase().includes(q));
+      }
+      const sortBy = this.browser.sortBy;
+      const dir = this.browser.sortDir === 'asc' ? 1 : -1;
+      result.sort((a, b) => {
+        let va = a[sortBy];
+        let vb = b[sortBy];
+        if (sortBy === 'title') {
+          va = (va || '').toLowerCase();
+          vb = (vb || '').toLowerCase();
+          return va < vb ? -dir : va > vb ? dir : 0;
+        }
+        if (sortBy === 'status') {
+          const order = { active: 0, completed: 1, archived: 2 };
+          return (order[va] || 0) < (order[vb] || 0) ? -dir : dir;
+        }
+        va = va ?? 0;
+        vb = vb ?? 0;
+        return (va - vb) * dir;
+      });
+      return result;
+    },
+
+    selectBrowserTask(taskId) {
+      this.browser.selectedTaskId = taskId;
+      this.browser.detailOpen = true;
+      const task = this.tasks.find(t => t.id === taskId);
+      if (task) {
+        this._editTitle = task.title;
+        this._editDesc = task.description || '';
+        this._editDate = toDateInput(task.next_review);
+        this._editEstimatedTime = task.estimated_time != null ? String(task.estimated_time) : '';
+      }
+      this.validationErrors = {};
+    },
+
+    closeBrowserDetail() {
+      this.browser.detailOpen = false;
+      this.browser.selectedTaskId = null;
+      this.validationErrors = {};
+    },
+
+    async startFromBrowser(taskId) {
+      const task = this.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      this.currentTask = task;
+      await this.startWork();
+      this.browser.open = false;
+      this.browser.detailOpen = false;
+      this.browser.selectedTaskId = null;
     },
 
     // ---- 卡片内联编辑 ----
@@ -325,29 +358,6 @@ export function createStore() {
       return getNextUpcomingTask(this.tasks);
     },
 
-    getActiveTasks() {
-      return getActiveTasks(this.tasks);
-    },
-
-    getAllTasks(filter) {
-      return getAllTasks(this.tasks, filter);
-    },
-
-    doSearch(query) {
-      return searchTasks(this.tasks, query);
-    },
-
-    getActionLabel(action) {
-      const map = {
-        advance: '推进',
-        complete: '完成',
-        create: '创建',
-        update: '更新',
-        archive: '归档',
-      };
-      return map[action] || action;
-    },
-
     paused(task) {
       return task && !!task.paused_at;
     },
@@ -361,79 +371,16 @@ export function createStore() {
 
     _bindKeyboard() {
       document.addEventListener('keydown', (e) => {
-        const tag = document.activeElement?.tagName;
-        const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
-
         if (e.key === 'Escape') {
           if (this.inlineEditing) {
             this.cancelInlineEdit();
-          } else if (this.sidebar.editTaskId) {
-            this.sidebar.editTaskId = null;
-            this.validationErrors = {};
-          } else if (this.sidebar.open) {
-            this.closeSidebar();
+          } else if (this.browser.detailOpen) {
+            this.closeBrowserDetail();
+          } else if (this.browser.open) {
+            this.closeBrowser();
           } else if (this.uiState !== 'idle') {
             this.closeForms();
           }
-          return;
-        }
-
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-          e.preventDefault();
-          if (!this.sidebar.open) this.toggleSidebar();
-          this.sidebar.tab = 'search';
-          return;
-        }
-
-        if (isInput) return;
-
-        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-          e.preventDefault();
-          this.doUndo();
-          return;
-        }
-
-        if (e.key === 'n' || e.key === 'N') {
-          e.preventDefault();
-          this.openCreateForm();
-          return;
-        }
-
-        if (!this.working) return;
-
-        const hasTask = !!this.currentTask;
-        if (!hasTask) return;
-
-        switch (e.key) {
-          case '1':
-            e.preventDefault();
-            this.doPushLater();
-            break;
-          case '2':
-            e.preventDefault();
-            this.doSchedule(getTodayEnd() + 1000);
-            break;
-          case '3':
-            e.preventDefault();
-            this.doSchedule(Date.now() + 604800000);
-            break;
-          case ' ':
-            e.preventDefault();
-            if (this.currentTask?.paused_at) {
-              this.doUnpause();
-            } else {
-              this.doPause();
-            }
-            break;
-          case 'Enter':
-            e.preventDefault();
-            this.doComplete();
-            break;
-          case 'e':
-          case 'E':
-            e.preventDefault();
-            this.startInlineEdit(this.currentTask);
-            break;
         }
       });
     },

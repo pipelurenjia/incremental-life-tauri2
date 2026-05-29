@@ -13,12 +13,104 @@
   <div id="app">
     <!-- 顶部导航栏（始终可见） -->
     <nav class="topbar">
-      <button type="button" class="topbar-menu-btn" @click="toggleSidebar()">☰ 菜单</button>
       <span class="topbar-title">渐进执行</span>
+      <button type="button" class="topbar-menu-btn topbar-browse-btn"
+        :class="{ active: browser.open }"
+        @click="toggleBrowser()">📋 浏览</button>
     </nav>
 
+    <!-- 卡片浏览器 -->
+    <div v-if="browser.open" class="browser-layout">
+      <div class="browser-toolbar">
+        <input type="search" class="browser-search" placeholder="搜索任务标题..." v-model="browser.searchQuery" />
+        <div class="browser-toolbar-actions">
+          <button type="button" class="browser-toolbar-btn" @click="importTaskFile()">导入</button>
+          <button type="button" class="browser-toolbar-btn" @click="exportJSON()">导出 JSON</button>
+          <button type="button" class="browser-toolbar-btn" @click="exportCSV()">导出 CSV</button>
+          <button type="button" class="browser-toolbar-btn browser-close-btn" @click="closeBrowser()">✕</button>
+        </div>
+      </div>
+
+      <div class="browser-body">
+        <div class="browser-table-wrap">
+          <table class="browser-table">
+            <thead>
+              <tr>
+                <th class="col-title" @click="browserSetSort('title')">标题{{ browserSortIcon('title') }}</th>
+                <th class="col-status" @click="browserSetSort('status')">状态{{ browserSortIcon('status') }}</th>
+                <th class="col-date" @click="browserSetSort('next_review')">到期{{ browserSortIcon('next_review') }}</th>
+                <th class="col-est" @click="browserSetSort('estimated_time')">预估{{ browserSortIcon('estimated_time') }}</th>
+                <th class="col-total" @click="browserSetSort('total_time_spent')">总耗时{{ browserSortIcon('total_time_spent') }}</th>
+                <th class="col-created" @click="browserSetSort('created_at')">创建{{ browserSortIcon('created_at') }}</th>
+                <th class="col-action">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="task in getBrowserTasks()" :key="task.id">
+                <tr class="browser-row" :class="{ selected: browser.selectedTaskId === task.id }"
+                  @click="selectBrowserTask(task.id)">
+                  <td class="col-title">{{ task.title }}</td>
+                  <td class="col-status"><span class="browser-status" :class="'browser-status--' + task.status">{{ formatBrowserStatus(task.status) }}</span></td>
+                  <td class="col-date">{{ formatNextReview(task.next_review) }}</td>
+                  <td class="col-est">{{ task.estimated_time != null ? task.estimated_time + '分' : '-' }}</td>
+                  <td class="col-total">{{ formatTotalTime(task.total_time_spent) }}</td>
+                  <td class="col-created">{{ formatDateTime(task.created_at) }}</td>
+                  <td class="col-action">
+                    <button type="button" class="browser-start-btn" @click.stop="startFromBrowser(task.id)"
+                      title="从此任务开始工作">▶ 开始</button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+          <p v-if="getBrowserTasks().length === 0" class="browser-empty">暂无匹配任务</p>
+        </div>
+
+        <!-- 右侧详情面板 -->
+        <div v-if="browser.detailOpen && getTaskById(browser.selectedTaskId)" class="browser-detail-panel">
+          <div class="browser-detail-header">
+            <span>任务详情</span>
+            <button type="button" class="browser-detail-close" @click="closeBrowserDetail()">✕</button>
+          </div>
+          <div class="browser-detail-body">
+            <label>标题
+              <input type="text" :value="_editTitle" @input="onEditTitle($event)" maxlength="200" />
+              <span v-if="validationErrors.title" class="field-error">{{ validationErrors.title }}</span>
+            </label>
+            <label>备注
+              <textarea :value="_editDesc" @input="onEditDesc($event)" rows="3"></textarea>
+            </label>
+            <label>状态
+              <select :value="getTaskById(browser.selectedTaskId).status" @change="browserStatusChange($event)">
+                <option value="active">活跃</option>
+                <option value="completed">已完成</option>
+                <option value="archived">已归档</option>
+              </select>
+            </label>
+            <label>到期日期
+              <input type="date" :value="_editDate" @input="onEditDate($event)" />
+            </label>
+            <label>预估耗时 (分钟)
+              <input type="number" :value="_editEstimatedTime" @input="onEditEstimatedTime($event)" placeholder="选填" min="0" />
+            </label>
+            <label>总耗时
+              <span class="field-readonly">{{ formatTotalTime(getTaskById(browser.selectedTaskId).total_time_spent) }}</span>
+            </label>
+            <label>创建时间
+              <span class="field-readonly">{{ formatDateTime(getTaskById(browser.selectedTaskId).created_at) }}</span>
+            </label>
+            <div class="browser-detail-actions">
+              <button type="button" class="btn-save" @click="saveBrowserEdit()">保存</button>
+              <button type="button" class="btn-cancel" @click="cancelBrowserEdit()">取消</button>
+              <button type="button" class="btn-delete" @click="browserArchive(browser.selectedTaskId)">归档</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 主视图 -->
-    <main v-if="!sidebar.open" role="main" aria-live="polite">
+    <main v-if="!browser.open" role="main" aria-live="polite">
       <div class="container">
 
         <!-- ===== 首页：未工作 ===== -->
@@ -128,98 +220,7 @@
       </div>
     </main>
 
-    <!-- ===== 左侧边栏 ===== -->
-    <div v-if="sidebar.open" class="sidebar-overlay" @click="closeSidebar()">
-      <aside class="sidebar" :style="sidebarStyle()" @click.stop>
-        <div class="sidebar-header">
-          <span>
-            <button v-if="sidebar.editTaskId" type="button" class="sidebar-back" @click="sidebar.editTaskId = null">← 返回</button>
-            <span v-else>菜单</span>
-          </span>
-          <button type="button" class="sidebar-close" @click="closeSidebar()">✕</button>
-        </div>
 
-        <!-- 任务编辑面板（侧边栏内嵌） -->
-        <div v-if="sidebar.editTaskId && getTaskById(sidebar.editTaskId)" class="sidebar-edit-panel">
-          <label>标题
-            <input type="text" :value="getTaskById(sidebar.editTaskId).title"
-              @input="onEditTitle($event)" maxlength="200" />
-            <span v-if="validationErrors.title" class="field-error">{{ validationErrors.title }}</span>
-          </label>
-          <label>备注
-            <textarea :value="getTaskById(sidebar.editTaskId).description || ''"
-              @input="onEditDesc($event)" rows="3"></textarea>
-          </label>
-          <label>到期日期
-            <input type="date" :value="formatDueDate(getTaskById(sidebar.editTaskId).next_review)"
-              @input="onEditDate($event)" />
-          </label>
-          <label>总耗时
-            <span class="field-readonly">{{ formatTotalTime(getTaskById(sidebar.editTaskId).total_time_spent) }}</span>
-          </label>
-          <label>预估耗时 (分钟)
-            <input type="number" :value="_editEstimatedTime"
-              @input="onEditEstimatedTime($event)" placeholder="选填" min="0" />
-          </label>
-          <div class="sidebar-edit-actions">
-            <button type="button" class="btn-save" @click="saveEdit()">保存</button>
-            <button type="button" class="btn-cancel" @click="sidebar.editTaskId = null; validationErrors = {}">取消</button>
-            <button type="button" class="btn-delete" @click="confirmArchive(sidebar.editTaskId)">归档</button>
-          </div>
-        </div>
-
-        <!-- 标签切换（编辑面板显示时隐藏） -->
-        <nav v-if="!sidebar.editTaskId" class="sidebar-tabs">
-          <button type="button" v-for="tab in sidebarTabs" :key="tab.id" class="sidebar-tab"
-            :class="{ active: sidebar.tab === tab.id }" @click="switchTab(tab.id)">{{ tab.label }}</button>
-        </nav>
-
-        <div v-if="!sidebar.editTaskId && sidebar.tab === 'active'" class="sidebar-content">
-          <ul class="task-list">
-            <li v-for="task in getActiveTasks()" :key="task.id" class="task-list-item" @click="openSidebarEdit(task.id)">
-              <span class="task-list-title">{{ task.title }}</span>
-              <span class="task-list-time">{{ formatNextReview(task.next_review) }}</span>
-            </li>
-          </ul>
-          <p v-if="getActiveTasks().length === 0" class="sidebar-empty">暂无活跃任务</p>
-        </div>
-
-        <div v-if="!sidebar.editTaskId && sidebar.tab === 'all'" class="sidebar-content">
-          <input type="search" class="sidebar-search" placeholder="筛选任务..." v-model="searchQuery" />
-          <ul class="task-list">
-            <li v-for="task in getAllTasks(searchQuery)" :key="task.id" class="task-list-item" @click="openSidebarEdit(task.id)">
-              <span class="task-list-title">{{ task.title }}</span>
-              <span class="task-list-status">{{ statusLabel(task.status) }}</span>
-            </li>
-          </ul>
-          <p v-if="getAllTasks(searchQuery).length === 0" class="sidebar-empty">暂无匹配任务</p>
-        </div>
-
-        <div v-if="!sidebar.editTaskId && sidebar.tab === 'history'" class="sidebar-content">
-          <ul class="log-list">
-            <li v-for="log in actionLogs" :key="log.id" class="log-item">
-              <span class="log-action">{{ getActionLabel(log.action) }}</span>
-              <span class="log-title">{{ log.task_title }}</span>
-              <span class="log-time">{{ formatDateTime(log.timestamp) }}</span>
-            </li>
-          </ul>
-          <p v-if="actionLogs.length === 0" class="sidebar-empty">暂无操作记录</p>
-        </div>
-
-        <div v-if="!sidebar.editTaskId && sidebar.tab === 'search'" class="sidebar-content">
-          <input type="search" class="sidebar-search" placeholder="搜索任务标题..." v-model="searchQuery" />
-          <ul v-if="searchQuery.trim()" class="task-list">
-            <li v-for="task in doSearch(searchQuery)" :key="task.id" class="task-list-item" @click="openSidebarEdit(task.id)">
-              <span class="task-list-title">{{ task.title }}</span>
-              <span class="task-list-status">{{ statusLabel(task.status) }}</span>
-            </li>
-          </ul>
-          <p v-if="searchQuery.trim() && doSearch(searchQuery).length === 0" class="sidebar-empty">无匹配结果</p>
-        </div>
-
-        <div class="sidebar-resize-handle" @mousedown="startResize($event)"></div>
-      </aside>
-    </div>
 
     <!-- ===== 新建表单浮层 ===== -->
     <div v-if="uiState === 'creating'" class="modal-overlay" @click="closeForms()">
