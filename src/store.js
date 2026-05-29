@@ -202,6 +202,21 @@ export function createStore() {
       this.currentTask = getCurrentTask(this.tasks);
     },
 
+    async doDelete(taskId) {
+      const task = this.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      this.tasks = this.tasks.filter(t => t.id !== taskId);
+      this.actionLogs = this.actionLogs.filter(l => l.task_id !== taskId);
+      if (this.currentTask?.id === taskId) {
+        this.currentTask = getCurrentTask(this.tasks);
+      }
+      if (this.browser.selectedTaskId === taskId) {
+        this.browser.selectedTaskId = null;
+        this.browser.detailOpen = false;
+      }
+      await this._persist();
+    },
+
     // ---- 撤销 ----
     pushUndo(snapshot) {
       this.undoStack.push(snapshot);

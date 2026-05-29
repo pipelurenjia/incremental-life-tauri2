@@ -92,6 +92,12 @@ store.browserArchive = (taskId) => {
   }
 };
 
+store.browserDelete = (taskId) => {
+  if (confirm('确定永久删除此任务吗？操作不可撤销。')) {
+    store.doDelete(taskId);
+  }
+};
+
 store.browserSortIcon = (column) => {
   if (store.browser.sortBy !== column) return ' ⇅';
   return store.browser.sortDir === 'asc' ? ' ↑' : ' ↓';
