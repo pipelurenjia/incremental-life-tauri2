@@ -1,82 +1,96 @@
 /**
- * 持久化封装 — 双环境适配
+ * 持久化封装 — Tauri 环境 + 浏览器/Node 降级
  *
- * - Tauri 环境: 使用 @tauri-apps/plugin-store（文件存储到 %APPDATA%）
- * - 浏览器环境: 使用 in-memory Map（用于 dev 调试）
+ * 数据分层：
+ *  - 任务（tasks） → vault.js（MD 文件，存放在用户选择的 vault 目录）
+ *  - 日志（logs）  → plugin-store（"vault-settings.json"，应用数据目录）
+ *  - 设置（vault_path） → plugin-store（"vault-settings.json"）
+ *
+ * 与旧版本差异：
+ *  - 旧：所有数据走 plugin-store 'data.json'（含 tasks 和 logs）
+ *  - 新：tasks 走 MD 文件；logs + settings 走新的 'vault-settings.json'；旧 data.json 忽略
  */
 
 import { generateId } from './utils.js';
+import {
+  readAllTasks as vaultReadAll,
+  writeTask as vaultWrite,
+  deleteTask as vaultDelete,
+  getVaultPath,
+  setVaultPath,
+  initVault as vaultInit,
+  pickVaultFolder as vaultPickFolder,
+  clearVaultPath,
+} from './vault.js';
 
-const TASK_DEFAULTS = {
-  description: '',
-  status: 'active',
-  next_review: Date.now(),
-  last_pushed_at: Date.now(),
-  paused_at: null,
-  created_at: Date.now(),
-};
+// ============================================================
+// 任务（MD 文件，vault.js 负责实际 I/O）
+// ============================================================
 
-let _store = null;
+// 跟踪已写入的文件 id 集合，用于 saveTasks 时清理被删除的任务
+let _knownIds = new Set();
 
-async function getStore() {
-  if (_store !== null) return _store;
+export async function loadTasks() {
+  const tasks = await vaultReadAll();
+  _knownIds = new Set(tasks.map(t => t.id));
+  return tasks;
+}
 
+/**
+ * 写入全部任务：先写所有（新增/更新），再删除 _knownIds 中已不在新数组里的。
+ * 顺序保证崩溃时只可能多出文件，不会丢文件。
+ */
+export async function saveTasks(tasks) {
+  const newIds = new Set();
+  for (const task of tasks) {
+    if (!task || !task.id) continue;
+    newIds.add(task.id);
+    await vaultWrite(task);
+  }
+  for (const oldId of _knownIds) {
+    if (!newIds.has(oldId)) {
+      await vaultDelete(oldId);
+    }
+  }
+  _knownIds = newIds;
+}
+
+// ============================================================
+// 日志（plugin-store JSON 侧车）
+// ============================================================
+
+let _logStore = null;
+
+async function getLogStore() {
+  if (_logStore) return _logStore;
   try {
-    // Dynamic import — only resolves inside Tauri WebView
     const { load } = await import('@tauri-apps/plugin-store');
-    _store = await load('data.json', { autoSave: true });
+    _logStore = await load('vault-settings.json', { autoSave: true });
   } catch {
-    // 浏览器/非 Tauri 环境：in-memory fallback
     const mem = new Map();
-    _store = {
+    _logStore = {
       get: async (key) => mem.get(key),
       set: async (key, val) => { mem.set(key, val); },
       save: async () => {},
     };
   }
-
-  return _store;
-}
-
-export async function loadTasks() {
-  const store = await getStore();
-  const raw = await store.get('tasks');
-  if (!raw) return [];
-  return migrateTasks(raw);
-}
-
-export async function saveTasks(tasks) {
-  const store = await getStore();
-  await store.set('tasks', tasks);
+  return _logStore;
 }
 
 export async function loadLogs() {
-  const store = await getStore();
+  const store = await getLogStore();
   const raw = await store.get('logs');
   return raw || [];
 }
 
 export async function saveLogs(logs) {
-  const store = await getStore();
+  const store = await getLogStore();
   await store.set('logs', logs);
 }
 
-/**
- * 备份：Tauri Store 已自动持久化（文件存储），保留 noop
- */
+/** 保留以兼容旧调用方。plugin-store 已 auto-save，这里 noop。 */
 export async function backup() {
-  // Tauri Store auto-save handles persistence
-}
-
-function migrateTasks(tasks) {
-  for (const t of tasks) {
-    for (const [key, def] of Object.entries(TASK_DEFAULTS)) {
-      if (!(key in t)) {
-        t[key] = typeof def === 'function' ? def() : def;
-      }
-    }
-  }
-  return tasks;
+  // noop
 }
 
 export function generateLog(task, action, changes, timeSpent) {
@@ -91,7 +105,21 @@ export function generateLog(task, action, changes, timeSpent) {
   };
 }
 
-// ---- 导入导出 ----
+// ============================================================
+// Vault 路径（与日志同文件，单独 key）
+// ============================================================
+
+export {
+  getVaultPath,
+  setVaultPath,
+  clearVaultPath,
+  vaultInit as initVault,
+  vaultPickFolder as pickVaultFolder,
+};
+
+// ============================================================
+// 导入导出（与 vault 解耦，导出当前 task 数组为 JSON/CSV）
+// ============================================================
 
 const EXPORT_FIELDS = ['title', 'status', 'next_review', 'estimated_time', 'total_time_spent', 'created_at', 'description'];
 
@@ -267,4 +295,14 @@ function migrateTaskImport(data) {
     total_time_spent: data.total_time_spent || 0,
     estimated_time: data.estimated_time != null ? data.estimated_time : null,
   };
+}
+
+// ============================================================
+// 测试钩子
+// ============================================================
+
+/** 重置内部缓存（仅测试用） */
+export function _resetForTests() {
+  _knownIds = new Set();
+  _logStore = null;
 }

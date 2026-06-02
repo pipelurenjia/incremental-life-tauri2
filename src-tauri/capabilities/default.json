@@ -6,6 +6,12 @@
     "core:default",
     "store:default",
     "dialog:default",
-    "fs:default"
+    "fs:default",
+    "fs:allow-read-text-file",
+    "fs:allow-write-text-file",
+    "fs:allow-read-dir",
+    "fs:allow-mkdir",
+    "fs:allow-exists",
+    "fs:allow-remove"
   ]
 }

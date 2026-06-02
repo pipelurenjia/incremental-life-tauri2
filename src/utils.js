@@ -51,3 +51,9 @@ export function formatDateTime(ts) {
 export function getTimeSpent(lastPushedAt) {
   return Date.now() - lastPushedAt;
 }
+
+export function autoResizeTextarea(el) {
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}

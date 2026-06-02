@@ -11,6 +11,7 @@ import {
   createTaskData, updateTaskFields, scheduleTask, completeTask,
   getCurrentTask, getNextUpcomingTask, pushToEndOfToday, getTodayEnd,
 } from './actions.js';
+import { autoResizeTextarea } from './utils.js';
 
 const MAX_UNDO = 50;
 
@@ -52,15 +53,28 @@ export function createStore() {
     async init() {
       this.tasks = await loadTasks();
       this.actionLogs = await loadLogs();
+      this.undoStack = [];
       this.currentTask = getCurrentTask(this.tasks);
       backup(this.tasks, this.actionLogs);
       this._bindKeyboard();
     },
 
+    async reloadFromVault() {
+      this.tasks = [];
+      this.actionLogs = [];
+      this.undoStack = [];
+      this.currentTask = null;
+      this.browser.open = false;
+      this.browser.detailOpen = false;
+      this.browser.selectedTaskId = null;
+      this.working = false;
+      await this.init();
+    },
+
     // ---- 工作模式 ----
-    async startWork() {
+    async startWork(task = null) {
       this.working = true;
-      this.currentTask = getCurrentTask(this.tasks);
+      this.currentTask = task || getCurrentTask(this.tasks);
       if (this.currentTask) {
         this.currentTask.last_pushed_at = Date.now();
         this.currentTask.paused_at = null;
@@ -316,6 +330,9 @@ export function createStore() {
         this._editEstimatedTime = task.estimated_time != null ? String(task.estimated_time) : '';
       }
       this.validationErrors = {};
+      requestAnimationFrame(() => {
+        autoResizeTextarea(document.querySelector('.browser-detail-body textarea'));
+      });
     },
 
     closeBrowserDetail() {
@@ -327,8 +344,7 @@ export function createStore() {
     async startFromBrowser(taskId) {
       const task = this.tasks.find(t => t.id === taskId);
       if (!task) return;
-      this.currentTask = task;
-      await this.startWork();
+      await this.startWork(task);
       this.browser.open = false;
       this.browser.detailOpen = false;
       this.browser.selectedTaskId = null;
@@ -340,6 +356,9 @@ export function createStore() {
       this._inlineTitle = task.title;
       this._inlineDesc = task.description || '';
       this._inlineDate = toDateInput(task.next_review);
+      requestAnimationFrame(() => {
+        autoResizeTextarea(document.querySelector('.task-desc-input'));
+      });
     },
 
     async saveInlineEdit(taskId) {
@@ -385,6 +404,8 @@ export function createStore() {
     },
 
     _bindKeyboard() {
+      if (this._keyboardBound) return;
+      this._keyboardBound = true;
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           if (this.inlineEditing) {
