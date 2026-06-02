@@ -159,7 +159,7 @@ store.saveInlineEdit = () => {
 
 store.openCreateForm = () => {
   store.browser.showCreateForm = true;
-  store._createFormData = { title: '', description: '', dueDate: '' };
+  store._createFormData = { title: '', description: '', dueDate: toDateInput(Date.now()) };
   store.validationErrors = {};
   setTimeout(() => {
     autoResizeTextarea(document.querySelector('.modal textarea'));
