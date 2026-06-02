@@ -11,6 +11,7 @@ import {
   createTaskData, updateTaskFields, scheduleTask, completeTask,
   getCurrentTask, getNextUpcomingTask, pushToEndOfToday, getTodayEnd,
 } from './actions.js';
+import { autoResizeTextarea } from './utils.js';
 
 const MAX_UNDO = 50;
 
@@ -329,6 +330,9 @@ export function createStore() {
         this._editEstimatedTime = task.estimated_time != null ? String(task.estimated_time) : '';
       }
       this.validationErrors = {};
+      setTimeout(() => {
+        autoResizeTextarea(document.querySelector('.browser-detail-body textarea'));
+      }, 0);
     },
 
     closeBrowserDetail() {
@@ -353,6 +357,9 @@ export function createStore() {
       this._inlineTitle = task.title;
       this._inlineDesc = task.description || '';
       this._inlineDate = toDateInput(task.next_review);
+      setTimeout(() => {
+        autoResizeTextarea(document.querySelector('.task-desc-input'));
+      }, 0);
     },
 
     async saveInlineEdit(taskId) {

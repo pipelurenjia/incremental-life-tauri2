@@ -97,9 +97,6 @@
             <label>备注
               <textarea :value="_editDesc" @input="onEditDesc($event)" rows="3"></textarea>
             </label>
-            <label>备注预览
-              <div class="md-preview" v-html="livePreview(_editDesc)"></div>
-            </label>
             <label>状态
               <select :value="getTaskById(browser.selectedTaskId).status" @change="browserStatusChange($event)">
                 <option value="active">活跃</option>
@@ -252,10 +249,7 @@
           <span v-if="validationErrors.title" class="field-error">{{ validationErrors.title }}</span>
         </label>
         <label>备注
-          <textarea v-model="_createFormData.description" rows="3"></textarea>
-        </label>
-        <label>备注预览
-          <div class="md-preview" v-html="livePreview(_createFormData.description)"></div>
+          <textarea :value="_createFormData.description" @input="onCreateDesc($event)" rows="3"></textarea>
         </label>
         <label>到期时间
           <input type="date" v-model="_createFormData.dueDate" />

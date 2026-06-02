@@ -17,7 +17,7 @@
 
 import { createApp } from 'petite-vue';
 import { createStore } from './store.js';
-import { formatTime, formatCountdown, formatDateTime } from './utils.js';
+import { formatTime, formatCountdown, formatDateTime, autoResizeTextarea } from './utils.js';
 import { validateTaskForm } from './components/edit-form.js';
 import { getCurrentTask, getTodayEnd } from './actions.js';
 import { renderMarkdown, renderMarkdownInline } from './markdown.js';
@@ -101,16 +101,16 @@ store._createFormData = { title: '', description: '', dueDate: '' };
 store.validationErrors = {};
 
 store.onEditTitle = (e) => { store._editTitle = e.target.value; };
-store.onEditDesc = (e) => { store._editDesc = e.target.value; };
+store.onEditDesc = (e) => { store._editDesc = e.target.value; autoResizeTextarea(e.target); };
 store.onEditDate = (e) => { store._editDate = e.target.value; };
 store.onEditEstimatedTime = (e) => { store._editEstimatedTime = e.target.value; };
 
 store.onInlineTitle = (e) => { store._inlineTitle = e.target.value; };
-store.onInlineDesc = (e) => { store._inlineDesc = e.target.value; };
+store.onInlineDesc = (e) => { store._inlineDesc = e.target.value; autoResizeTextarea(e.target); };
 store.onInlineDate = (e) => { store._inlineDate = e.target.value; };
 
 store.onCreateTitle = (e) => { store._createFormData.title = e.target.value; };
-store.onCreateDesc = (e) => { store._createFormData.description = e.target.value; };
+store.onCreateDesc = (e) => { store._createFormData.description = e.target.value; autoResizeTextarea(e.target); };
 store.onCreateDate = (e) => { store._createFormData.dueDate = e.target.value; };
 
 store.startInlineEdit = (task) => {
@@ -161,6 +161,9 @@ store.openCreateForm = () => {
   store.browser.showCreateForm = true;
   store._createFormData = { title: '', description: '', dueDate: '' };
   store.validationErrors = {};
+  setTimeout(() => {
+    autoResizeTextarea(document.querySelector('.modal textarea'));
+  }, 0);
 };
 
 store.cancelCreateForm = () => {
@@ -298,6 +301,7 @@ store.submitCreate = () => {
     description: store._createFormData.description,
     next_review: store._createFormData.dueDate ? fromDateInput(store._createFormData.dueDate) : undefined,
   });
+  store.cancelCreateForm();
 };
 
 // ============================================================
