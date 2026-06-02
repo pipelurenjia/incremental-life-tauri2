@@ -330,9 +330,9 @@ export function createStore() {
         this._editEstimatedTime = task.estimated_time != null ? String(task.estimated_time) : '';
       }
       this.validationErrors = {};
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         autoResizeTextarea(document.querySelector('.browser-detail-body textarea'));
-      }, 0);
+      });
     },
 
     closeBrowserDetail() {
@@ -357,9 +357,9 @@ export function createStore() {
       this._inlineTitle = task.title;
       this._inlineDesc = task.description || '';
       this._inlineDate = toDateInput(task.next_review);
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         autoResizeTextarea(document.querySelector('.task-desc-input'));
-      }, 0);
+      });
     },
 
     async saveInlineEdit(taskId) {

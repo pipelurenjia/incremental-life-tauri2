@@ -179,8 +179,7 @@
                 :value="_inlineDesc"
                 @input="onInlineDesc($event)"
                 @keydown.escape.prevent="cancelInlineEdit()"
-                placeholder="添加备注..."
-                rows="2"></textarea>
+                placeholder="添加备注..."></textarea>
               <div v-else class="task-desc task-desc-editable"
                 @click="startInlineEdit(currentTask)"
                 title="点击编辑备注"

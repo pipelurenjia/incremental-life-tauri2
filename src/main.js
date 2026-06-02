@@ -161,9 +161,9 @@ store.openCreateForm = () => {
   store.browser.showCreateForm = true;
   store._createFormData = { title: '', description: '', dueDate: toDateInput(Date.now()) };
   store.validationErrors = {};
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     autoResizeTextarea(document.querySelector('.modal textarea'));
-  }, 0);
+  });
 };
 
 store.cancelCreateForm = () => {
