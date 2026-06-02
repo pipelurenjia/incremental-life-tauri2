@@ -833,8 +833,7 @@ main {
 }
 
 .btn-save,
-.btn-cancel,
-.btn-delete {
+.btn-cancel {
   font-family: var(--font-body);
   font-size: 0.875rem;
   font-weight: 500;
@@ -864,17 +863,6 @@ main {
 .btn-cancel:hover {
   background: var(--surface-hover);
   color: var(--text);
-}
-
-.btn-delete {
-  background: transparent;
-  color: var(--danger);
-  border: 1px solid var(--danger);
-  margin-right: auto;
-}
-
-.btn-delete:hover {
-  background: var(--danger-bg);
 }
 
 /* ----- Form Validation ----- */
@@ -1329,24 +1317,6 @@ main {
 .browser-detail-actions .btn-cancel:hover {
   background: var(--surface-hover);
   color: var(--text);
-}
-
-.browser-detail-actions .btn-delete {
-  font-family: var(--font-body);
-  font-size: 0.825rem;
-  font-weight: 500;
-  padding: 0.4rem 0.9rem;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  background: transparent;
-  color: var(--danger);
-  border: 1px solid var(--danger);
-  margin-right: auto;
-  transition: all var(--transition);
-}
-
-.browser-detail-actions .btn-delete:hover {
-  background: var(--danger-bg);
 }
 
 /* ----- Browser Responsive ----- */

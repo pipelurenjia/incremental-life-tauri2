@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+if (typeof document === 'undefined') {
+  globalThis.document = { addEventListener: () => {}, removeEventListener: () => {} };
+}
+
 const mockFiles = new Map();
 const mockDirs = new Map();
 const mockStoreData = new Map();
@@ -200,5 +204,29 @@ describe('integration: MD file round-trip', () => {
     expect(b.status).toBe('completed');
     expect(b.estimated_time).toBe(null);
     expect(b.description).toBe('desc B');
+  });
+
+  it('startFromBrowser sets currentTask to the chosen task, not getCurrentTask(tasks)', async () => {
+    const { setVaultPath, initVault } = await import('../src/vault.js');
+    const { createStore } = await import('../src/store.js');
+
+    await setVaultPath('/integration/vault-h');
+    await initVault();
+
+    const store = createStore();
+    const now = Date.now();
+    store.tasks = [
+      { id: '1', title: 'Earliest due', status: 'active', next_review: now - 60000, last_pushed_at: 0, paused_at: null, total_time_spent: 0, created_at: now, description: '' },
+      { id: '2', title: 'Mid due',       status: 'active', next_review: now - 30000, last_pushed_at: 0, paused_at: null, total_time_spent: 0, created_at: now, description: '' },
+      { id: '3', title: 'Latest due',    status: 'active', next_review: now - 10000, last_pushed_at: 0, paused_at: null, total_time_spent: 0, created_at: now, description: '' },
+    ];
+
+    await store.startFromBrowser('3');
+
+    expect(store.currentTask).not.toBeNull();
+    expect(store.currentTask.id).toBe('3');
+    expect(store.currentTask.title).toBe('Latest due');
+    expect(store.working).toBe(true);
+    expect(store.browser.open).toBe(false);
   });
 });

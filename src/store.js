@@ -72,9 +72,9 @@ export function createStore() {
     },
 
     // ---- 工作模式 ----
-    async startWork() {
+    async startWork(task = null) {
       this.working = true;
-      this.currentTask = getCurrentTask(this.tasks);
+      this.currentTask = task || getCurrentTask(this.tasks);
       if (this.currentTask) {
         this.currentTask.last_pushed_at = Date.now();
         this.currentTask.paused_at = null;
@@ -344,8 +344,7 @@ export function createStore() {
     async startFromBrowser(taskId) {
       const task = this.tasks.find(t => t.id === taskId);
       if (!task) return;
-      this.currentTask = task;
-      await this.startWork();
+      await this.startWork(task);
       this.browser.open = false;
       this.browser.detailOpen = false;
       this.browser.selectedTaskId = null;
