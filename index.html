@@ -11,16 +11,33 @@
 </head>
 <body>
   <div id="app">
-    <!-- 顶部导航栏（始终可见） -->
+    <div v-if="showWizard" class="wizard-overlay" role="dialog" aria-modal="true" aria-labelledby="wizard-title">
+      <div class="wizard-modal">
+        <h1 class="wizard-title" id="wizard-title">🎯 渐进执行</h1>
+        <h2 class="wizard-subtitle">设置你的 Vault</h2>
+        <p class="wizard-desc">选择一个文件夹作为 <strong>Vault</strong>，所有任务将以 Markdown 文档形式存放在此。</p>
+        <p class="wizard-desc">优势：可使用 iCloud / Dropbox / 坚果云等同步盘实现多设备访问；可用任意编辑器直接查看和修改。</p>
+        <button type="button" class="btn-wizard-primary" @click="onPickVault()">📁 选择 Vault 文件夹</button>
+        <p v-if="wizardError" class="wizard-error">⚠ {{ wizardError }}</p>
+        <p class="wizard-hint">你随时可在顶部「⚙」中更换 Vault。</p>
+      </div>
+    </div>
+
     <nav class="topbar">
       <span class="topbar-title">渐进执行</span>
-      <button type="button" class="topbar-menu-btn topbar-browse-btn"
-        :class="{ active: browser.open }"
-        @click="toggleBrowser()">📋 浏览</button>
+      <div class="topbar-actions">
+        <button type="button" class="topbar-menu-btn topbar-settings-btn"
+          @click="onChangeVault()"
+          title="更换 Vault"
+          aria-label="更换 Vault">⚙</button>
+        <button type="button" class="topbar-menu-btn topbar-browse-btn"
+          :class="{ active: browser.open }"
+          @click="toggleBrowser()"
+          aria-label="浏览所有任务">📋 浏览</button>
+      </div>
     </nav>
 
-    <!-- 卡片浏览器 -->
-    <div v-if="browser.open" class="browser-layout">
+    <div v-if="appReady && browser.open" class="browser-layout">
       <div class="browser-toolbar">
         <input type="search" class="browser-search" placeholder="搜索任务标题..." v-model="browser.searchQuery" />
         <div class="browser-toolbar-actions">
@@ -80,6 +97,9 @@
             <label>备注
               <textarea :value="_editDesc" @input="onEditDesc($event)" rows="3"></textarea>
             </label>
+            <label>备注预览
+              <div class="md-preview" v-html="livePreview(_editDesc)"></div>
+            </label>
             <label>状态
               <select :value="getTaskById(browser.selectedTaskId).status" @change="browserStatusChange($event)">
                 <option value="active">活跃</option>
@@ -110,8 +130,7 @@
       </div>
     </div>
 
-    <!-- 主视图 -->
-    <main v-if="!browser.open" role="main" aria-live="polite">
+    <main v-if="appReady && !browser.open" role="main" aria-live="polite">
       <div class="container">
 
         <!-- ===== 首页：未工作 ===== -->
@@ -165,9 +184,10 @@
                 @keydown.escape.prevent="cancelInlineEdit()"
                 placeholder="添加备注..."
                 rows="2"></textarea>
-              <p v-else class="task-desc task-desc-editable"
+              <div v-else class="task-desc task-desc-editable"
                 @click="startInlineEdit(currentTask)"
-                title="点击编辑备注">{{ currentTask.description || '添加备注...' }}</p>
+                title="点击编辑备注"
+                v-html="renderedDescription(currentTask) || '添加备注...'"></div>
 
               <div class="task-timer-row">
                 <span class="task-timer" :class="{ paused: currentTask.paused_at }">{{ formatTimer(currentTask) }}</span>
@@ -224,7 +244,7 @@
 
 
     <!-- ===== 新建表单浮层 ===== -->
-    <div v-if="uiState === 'creating'" class="modal-overlay" @click="closeForms()">
+    <div v-if="appReady && browser.showCreateForm && !browser.open" class="modal-overlay" @click="cancelCreateForm()">
       <div class="modal" @click.stop>
         <h3>新建任务</h3>
         <label>标题
@@ -234,12 +254,15 @@
         <label>备注
           <textarea v-model="_createFormData.description" rows="3"></textarea>
         </label>
+        <label>备注预览
+          <div class="md-preview" v-html="livePreview(_createFormData.description)"></div>
+        </label>
         <label>到期时间
           <input type="date" v-model="_createFormData.dueDate" />
         </label>
         <div class="modal-actions">
           <button type="button" class="btn-save" @click="submitCreate()">创建</button>
-          <button type="button" class="btn-cancel" @click="closeForms()">取消</button>
+          <button type="button" class="btn-cancel" @click="cancelCreateForm()">取消</button>
         </div>
       </div>
     </div>

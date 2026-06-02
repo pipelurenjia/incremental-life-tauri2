@@ -1,15 +1,83 @@
+/**
+ * main.js — 应用入口
+ *
+ * 启动流程（bootstrap）：
+ *  1. 创建 store（内存中，tasks=[]）
+ *  2. 检查 vault 路径（plugin-store）
+ *  3a. 未设置 → 挂载应用 + 显示首启向导（showWizard=true）
+ *  3b. 已设置 → 初始化 vault → 加载任务 → 挂载应用
+ *  4. 用户在向导中选 vault → 持久化 + 初始化 + 加载 + 隐藏向导
+ *  5. 用户在 topbar 更换 vault → 清空内存 + 重新加载
+ *
+ * 设计要点：
+ *  - Mount 只发生一次（无论走哪条分支）
+ *  - 向导用 v-if 控制可见性，状态保存在 store 上
+ *  - MD 渲染集中暴露 store.renderedDescription(task)
+ */
+
 import { createApp } from 'petite-vue';
 import { createStore } from './store.js';
 import { formatTime, formatCountdown, formatDateTime } from './utils.js';
 import { validateTaskForm } from './components/edit-form.js';
 import { getCurrentTask, getTodayEnd } from './actions.js';
+import { renderMarkdown, renderMarkdownInline } from './markdown.js';
 import {
   exportTasksToJSON, exportTasksToCSV, downloadFile, openFile, parseImportedTasks,
 } from './storage.js';
+import {
+  getVaultPath, setVaultPath, initVault, pickVaultFolder,
+} from './vault.js';
 
 const store = createStore();
 
-// ---- 暂停/继续 ----
+// ============================================================
+// 启动状态（wizard / appReady）
+// ============================================================
+
+store.showWizard = false;
+store.wizardError = '';
+store.appReady = false;
+store.vaultPath = null;
+
+// ============================================================
+// 向导 / 更换 vault
+// ============================================================
+
+store.onPickVault = async () => {
+  store.wizardError = '';
+  try {
+    const path = await pickVaultFolder();
+    if (!path) return;
+    await initVault(path);
+    store.vaultPath = path;
+    await store.init();
+    store.showWizard = false;
+    store.appReady = true;
+  } catch (e) {
+    store.wizardError = `选择失败：${e.message || e}`;
+  }
+};
+
+store.onChangeVault = async () => {
+  store.wizardError = '';
+  try {
+    const path = await pickVaultFolder();
+    if (!path) return;
+    if (confirm('更换 Vault 后，当前所有任务将从内存清空并从新 Vault 重新加载。继续？')) {
+      await setVaultPath(path);
+      await initVault();
+      store.vaultPath = path;
+      await store.reloadFromVault();
+    }
+  } catch (e) {
+    store.wizardError = `更换失败：${e.message || e}`;
+  }
+};
+
+// ============================================================
+// 暂停/继续
+// ============================================================
+
 store.togglePause = () => {
   if (!store.currentTask) return;
   if (store.currentTask.paused_at) {
@@ -19,21 +87,87 @@ store.togglePause = () => {
   }
 };
 
-// ---- 编辑表单（侧边栏内嵌） ----
 store._editTitle = '';
 store._editDesc = '';
 store._editDate = '';
 store._editEstimatedTime = '';
+
+store._inlineTitle = '';
+store._inlineDesc = '';
+store._inlineDate = '';
+store.inlineEditing = null;
+
+store._createFormData = { title: '', description: '', dueDate: '' };
+store.validationErrors = {};
 
 store.onEditTitle = (e) => { store._editTitle = e.target.value; };
 store.onEditDesc = (e) => { store._editDesc = e.target.value; };
 store.onEditDate = (e) => { store._editDate = e.target.value; };
 store.onEditEstimatedTime = (e) => { store._editEstimatedTime = e.target.value; };
 
-// ---- 卡片内联编辑 ----
 store.onInlineTitle = (e) => { store._inlineTitle = e.target.value; };
 store.onInlineDesc = (e) => { store._inlineDesc = e.target.value; };
 store.onInlineDate = (e) => { store._inlineDate = e.target.value; };
+
+store.onCreateTitle = (e) => { store._createFormData.title = e.target.value; };
+store.onCreateDesc = (e) => { store._createFormData.description = e.target.value; };
+store.onCreateDate = (e) => { store._createFormData.dueDate = e.target.value; };
+
+store.startInlineEdit = (task) => {
+  store.inlineEditing = task.id;
+  store._inlineTitle = task.title;
+  store._inlineDesc = task.description || '';
+  store._inlineDate = task.next_review ? toDateInput(task.next_review) : '';
+  store.validationErrors = {};
+};
+
+store.cancelInlineEdit = () => {
+  store.inlineEditing = null;
+  store._inlineTitle = '';
+  store._inlineDesc = '';
+  store._inlineDate = '';
+};
+
+store.saveInlineEdit = () => {
+  const errors = validateTaskForm(store._inlineTitle);
+  if (Object.keys(errors).length) {
+    store.validationErrors = errors;
+    return;
+  }
+  const taskId = store.inlineEditing;
+  const task = store.tasks.find(t => t.id === taskId);
+  if (!task) { store.cancelInlineEdit(); return; }
+  const changes = {};
+  const newTitle = store._inlineTitle.trim();
+  const newDesc = (store._inlineDesc || '').trim();
+  if (newTitle !== task.title) changes.title = newTitle;
+  if (newDesc !== (task.description || '')) changes.description = newDesc;
+  if (store._inlineDate) {
+    const newDate = fromDateInput(store._inlineDate);
+    if (newDate !== task.next_review) changes.next_review = newDate;
+  }
+  if (Object.keys(changes).length) {
+    store.doUpdate(taskId, changes);
+  }
+  store.cancelInlineEdit();
+  store.validationErrors = {};
+};
+
+// ============================================================
+// 创建表单（browser 中）
+// ============================================================
+
+store.openCreateForm = () => {
+  store.browser.showCreateForm = true;
+  store._createFormData = { title: '', description: '', dueDate: '' };
+  store.validationErrors = {};
+};
+
+store.cancelCreateForm = () => {
+  store.browser.showCreateForm = false;
+  store._createFormData = { title: '', description: '', dueDate: '' };
+  store.validationErrors = {};
+};
 
 store.confirmArchive = (taskId) => {
   if (confirm('确定归档此任务吗？')) {
@@ -41,7 +175,10 @@ store.confirmArchive = (taskId) => {
   }
 };
 
-// ---- 卡片浏览器 ----
+// ============================================================
+// 卡片浏览器
+// ============================================================
+
 store.saveBrowserEdit = () => {
   const taskId = store.browser.selectedTaskId;
   if (!taskId) return;
@@ -163,7 +300,10 @@ store.submitCreate = () => {
   });
 };
 
-// ---- 日期工具 ----
+// ============================================================
+// 日期工具
+// ============================================================
+
 function toDateInput(ts) {
   const d = new Date(ts);
   const pad = (n) => String(n).padStart(2, '0');
@@ -175,7 +315,10 @@ function fromDateInput(str) {
   return d.getTime();
 }
 
-// ---- 模板辅助 ----
+// ============================================================
+// 模板辅助
+// ============================================================
+
 store.formatTimer = (task) => {
   if (!task) return '00:00:00';
   if (task.paused_at) {
@@ -203,10 +346,8 @@ store.formatNextReview = (ts) => {
   if (!ts) return '';
   const d = new Date(ts);
   const now = new Date();
-  const pad = (n) => String(n + 1 === n + 1 ? n : n).padStart(2, '0');
   const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-  // today / tomorrow
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   const taskDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
   const diffDays = Math.round((taskDay - today) / 86400000);
@@ -222,19 +363,59 @@ store.formatNextReview = (ts) => {
 store.formatDueDate = (ts) => toDateInput(ts);
 store.getTodayEnd = getTodayEnd;
 
-// ---- 初始化（异步，等待 Tauri Store 加载完成后再挂载） ----
+store.renderedDescription = (task) => {
+  if (!task) return '';
+  return renderMarkdown(task.description || '');
+};
+
+store.livePreview = (text) => text && text.trim() ? renderMarkdown(text) : '<span class="md-empty">暂无备注</span>';
+
+store.renderedTitle = (task) => {
+  if (!task) return '';
+  return renderMarkdownInline(task.title || '');
+};
+
 store._now = Date.now();
 
-store.init().then(() => {
+// ============================================================
+// Bootstrap
+// ============================================================
+
+async function bootstrap() {
+  try {
+    const path = await getVaultPath();
+    store.vaultPath = path;
+    if (!path) {
+      store.showWizard = true;
+    } else {
+      try {
+        await initVault();
+        await store.init();
+        store.appReady = true;
+      } catch (e) {
+        store.showWizard = true;
+        store.wizardError = `原 Vault 目录不可访问：${e.message || e}。请重新选择。`;
+      }
+    }
+  } catch (e) {
+    store.showWizard = true;
+    store.wizardError = `初始化失败：${e.message || e}`;
+  }
   createApp(store).mount('#app');
-});
+}
+
+bootstrap();
+
+// ============================================================
+// 后台 ticker
+// ============================================================
 
 setInterval(() => {
   store._now = Date.now();
 }, 1000);
 
 setInterval(() => {
-  if (!store.currentTask) {
+  if (store.appReady && !store.currentTask) {
     store.currentTask = getCurrentTask(store.tasks);
   }
 }, 10000);

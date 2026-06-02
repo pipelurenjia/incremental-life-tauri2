@@ -52,9 +52,22 @@ export function createStore() {
     async init() {
       this.tasks = await loadTasks();
       this.actionLogs = await loadLogs();
+      this.undoStack = [];
       this.currentTask = getCurrentTask(this.tasks);
       backup(this.tasks, this.actionLogs);
       this._bindKeyboard();
+    },
+
+    async reloadFromVault() {
+      this.tasks = [];
+      this.actionLogs = [];
+      this.undoStack = [];
+      this.currentTask = null;
+      this.browser.open = false;
+      this.browser.detailOpen = false;
+      this.browser.selectedTaskId = null;
+      this.working = false;
+      await this.init();
     },
 
     // ---- 工作模式 ----
@@ -385,6 +398,8 @@ export function createStore() {
     },
 
     _bindKeyboard() {
+      if (this._keyboardBound) return;
+      this._keyboardBound = true;
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           if (this.inlineEditing) {
