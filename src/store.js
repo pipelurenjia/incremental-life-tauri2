@@ -45,6 +45,7 @@ export function createStore() {
       sortBy: 'next_review',
       sortDir: 'asc',
       searchQuery: '',
+      statusFilter: 'all',
       selectedTaskId: null,
       detailOpen: false,
     },
@@ -274,6 +275,7 @@ export function createStore() {
         this.browser.detailOpen = false;
         this.browser.selectedTaskId = null;
         this.browser.searchQuery = '';
+        this.browser.statusFilter = 'all';
       }
     },
 
@@ -296,7 +298,14 @@ export function createStore() {
       let result = [...this.tasks];
       const q = this.browser.searchQuery.trim().toLowerCase();
       if (q) {
-        result = result.filter(t => t.title.toLowerCase().includes(q));
+        result = result.filter(t =>
+          t.title.toLowerCase().includes(q) ||
+          (t.description || '').toLowerCase().includes(q)
+        );
+      }
+      const sf = this.browser.statusFilter;
+      if (sf && sf !== 'all') {
+        result = result.filter(t => t.status === sf);
       }
       const sortBy = this.browser.sortBy;
       const dir = this.browser.sortDir === 'asc' ? 1 : -1;

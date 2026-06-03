@@ -229,4 +229,114 @@ describe('integration: MD file round-trip', () => {
     expect(store.working).toBe(true);
     expect(store.browser.open).toBe(false);
   });
+
+  it('getBrowserTasks: search matches title OR description', async () => {
+    const { setVaultPath, initVault } = await import('../src/vault.js');
+    const { createStore } = await import('../src/store.js');
+
+    await setVaultPath('/integration/vault-i');
+    await initVault();
+
+    const store = createStore();
+    const now = Date.now();
+    store.tasks = [
+      { id: 'a', title: 'Read paper',     status: 'active',    next_review: now - 10000, created_at: now, description: '# Notes about neural networks' },
+      { id: 'b', title: 'Write essay',    status: 'active',    next_review: now - 20000, created_at: now, description: 'Cite the paper by Smith' },
+      { id: 'c', title: 'Buy groceries',  status: 'completed', next_review: now - 30000, created_at: now, description: 'milk, bread, eggs' },
+    ];
+
+    store.browser.searchQuery = 'paper';
+    const ids = store.getBrowserTasks().map(t => t.id).sort();
+    expect(ids).toEqual(['a', 'b']);
+
+    store.browser.searchQuery = 'milk';
+    expect(store.getBrowserTasks().map(t => t.id)).toEqual(['c']);
+
+    store.browser.searchQuery = 'NEURAL';
+    expect(store.getBrowserTasks().map(t => t.id)).toEqual(['a']);
+
+    store.browser.searchQuery = 'nothing-matches';
+    expect(store.getBrowserTasks()).toEqual([]);
+  });
+
+  it('getBrowserTasks: statusFilter narrows by status', async () => {
+    const { setVaultPath, initVault } = await import('../src/vault.js');
+    const { createStore } = await import('../src/store.js');
+
+    await setVaultPath('/integration/vault-j');
+    await initVault();
+
+    const store = createStore();
+    const now = Date.now();
+    store.tasks = [
+      { id: '1', title: 'A', status: 'active',    next_review: now, created_at: now, description: '' },
+      { id: '2', title: 'B', status: 'completed', next_review: now, created_at: now, description: '' },
+      { id: '3', title: 'C', status: 'archived',  next_review: now, created_at: now, description: '' },
+      { id: '4', title: 'D', status: 'active',    next_review: now, created_at: now, description: '' },
+    ];
+
+    store.browser.statusFilter = 'all';
+    expect(store.getBrowserTasks()).toHaveLength(4);
+
+    store.browser.statusFilter = 'active';
+    expect(store.getBrowserTasks().map(t => t.id).sort()).toEqual(['1', '4']);
+
+    store.browser.statusFilter = 'completed';
+    expect(store.getBrowserTasks().map(t => t.id)).toEqual(['2']);
+
+    store.browser.statusFilter = 'archived';
+    expect(store.getBrowserTasks().map(t => t.id)).toEqual(['3']);
+  });
+
+  it('getBrowserTasks: search AND statusFilter combine (logical AND)', async () => {
+    const { setVaultPath, initVault } = await import('../src/vault.js');
+    const { createStore } = await import('../src/store.js');
+
+    await setVaultPath('/integration/vault-k');
+    await initVault();
+
+    const store = createStore();
+    const now = Date.now();
+    store.tasks = [
+      { id: '1', title: 'Read paper',    status: 'active',    next_review: now, created_at: now, description: 'topic A' },
+      { id: '2', title: 'Read book',     status: 'completed', next_review: now, created_at: now, description: 'paper edition' },
+      { id: '3', title: 'Write report',  status: 'active',    next_review: now, created_at: now, description: 'no mention' },
+    ];
+
+    store.browser.searchQuery = 'paper';
+    store.browser.statusFilter = 'active';
+    expect(store.getBrowserTasks().map(t => t.id)).toEqual(['1']);
+
+    store.browser.statusFilter = 'completed';
+    expect(store.getBrowserTasks().map(t => t.id)).toEqual(['2']);
+
+    store.browser.statusFilter = 'archived';
+    expect(store.getBrowserTasks()).toEqual([]);
+  });
+
+  it('toggleBrowser resets searchQuery+statusFilter on open; closing leaves them alone', async () => {
+    const { setVaultPath, initVault } = await import('../src/vault.js');
+    const { createStore } = await import('../src/store.js');
+
+    await setVaultPath('/integration/vault-l');
+    await initVault();
+
+    const store = createStore();
+    store.browser.open = false;
+    store.browser.searchQuery = 'leftover';
+    store.browser.statusFilter = 'archived';
+
+    store.toggleBrowser();
+    expect(store.browser.open).toBe(true);
+    expect(store.browser.searchQuery).toBe('');
+    expect(store.browser.statusFilter).toBe('all');
+
+    store.browser.searchQuery = 'milk';
+    store.browser.statusFilter = 'active';
+
+    store.toggleBrowser();
+    expect(store.browser.open).toBe(false);
+    expect(store.browser.searchQuery).toBe('milk');
+    expect(store.browser.statusFilter).toBe('active');
+  });
 });
